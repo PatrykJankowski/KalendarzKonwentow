@@ -1,0 +1,7 @@
+{
+  "name": "konwenty",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
