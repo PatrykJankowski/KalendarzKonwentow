@@ -1,0 +1,23 @@
+* {
+  outline: none;
+}
+
+h1, h2 {
+  font-family: "Khand", serif !important;
+  color: #000;
+}
+
+h3, h4 {
+  color: #000;
+}
+
+.card-content-md {
+  p {
+    margin: 0;
+    text-align: justify;
+  }
+}
+
+.alert-wrapper {
+  --background: var(--ion-color-light);
+}
