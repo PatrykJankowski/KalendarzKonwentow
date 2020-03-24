@@ -1,20 +1,35 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Event } from '@models/event.model';
+import { FavouriteService } from '@services/favourites.service';
+import { FiltersService } from '@services/filters.service';
 
 @Component({
   selector: 'app-event-list-card',
   templateUrl: './event-list-card.component.html',
   styleUrls: ['./event-list-card.component.scss'],
 })
-export class EventListCardComponent implements OnInit {
+export class EventListCardComponent {
   @Input() event: Event;
 
-  constructor() { }
+  constructor(public favouritesService: FavouriteService, private filtersService: FiltersService) { }
 
-  ngOnInit() {}
+  public addToFavourites(id: number): void {
+    this.favouritesService.addToFavorites(id).then(() => {
+      if (this.favouritesService.getFavouritesOnlyFlag()) {
+        this.filtersService.filterEvents(this.filtersService.filteredEvents)
+      }
+    });
+  }
 
-  isIos() {
-    const win = window as any;
-    return win && win.Ionic && win.Ionic.mode === 'ios';
+  public removeFromFavourites(id: number): void {
+    this.favouritesService.removeFromFavourites(id).then(() => {
+      if (this.favouritesService.getFavouritesOnlyFlag()) {
+        this.filtersService.filterEvents(this.filtersService.filteredEvents)
+      }
+    });
+  }
+
+  public loadDefaultImage(event): void {
+    event.target.src = '/assets/no-image.jpg';
   }
 }

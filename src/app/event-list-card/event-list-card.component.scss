@@ -1,59 +1,77 @@
-ion-item {
-  --padding-start: 0;
-  --inner-padding-end: 0;
-}
-
-ion-label {
-  margin-top: 12px;
-  margin-bottom: 12px;
-}
-
-ion-item h2 {
-  font-weight: 600;
-  margin: 0;
-}
-
-ion-item p {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  width: 95%;
-}
-
-ion-item .date {
-  float: right;
-  align-items: center;
+.event-card {
   display: flex;
-}
+  min-height: 126px;
 
-ion-item ion-icon {
-  color: #c9c9ca;
-}
+  &__fav {
+    position: absolute;
+    z-index: 1;
+    top: 10px;
+    right: 15px;
+    display: flex;
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    padding: 0 0 10px 10px;
+    --padding-end: 5px;
+  }
 
-ion-item ion-note {
-  font-size: 15px;
-  margin-right: 8px;
-  font-weight: normal;
-}
+  &__icon {
+    position: absolute;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+  }
 
-ion-item ion-note.md {
-  margin-right: 14px;
-}
+  &__card {
+    display: flex;
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-radius: 0;
+  }
 
-.dot {
-  display: block;
-  height: 12px;
-  width: 12px;
-  border-radius: 50%;
-  align-self: start;
-  margin: 16px 10px 16px 16px;
-}
+  &__inner {
+    -webkit-padding-start: 10px;
+    padding-inline-start: 10px;
+    -webkit-padding-end: 10px;
+    padding-inline-end: 10px;
+    padding: 10px
+  }
 
-.dot-unread {
-  background: var(--ion-color-primary);
-}
+  &__description {
+    padding-left: 10px;
+  }
 
-ion-footer ion-title {
-  font-size: 11px;
-  font-weight: normal;
+  &__thumb {
+    height: 96px;
+    align-self: center;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__category, &__location {
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  &__date {
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'Open Sans', serif;
+
+    color: #000;
+    position: absolute;
+    bottom: -25px;
+  }
+
+  &__thumb, &__category, &__title, &__location {
+    width: 100%;
+  }
 }

@@ -1,3 +1,43 @@
-ion-content ion-toolbar {
-  --background: var(--ion-background-color);
+:host {
+  flex: 1;
+}
+
+.header {
+  &__toolbar {
+    --padding-top: 0;
+    --padding-bottom: 0;
+    --padding-start: 0;
+    --padding-end: 0;
+    --background: var(--ion-color-light);
+  }
+
+  &__title {
+    padding: 10px;
+    background: var(--ion-color-primary);
+  }
+
+  &__logo {
+    display: flex;
+    height: 40px;
+    margin: 0 auto;
+  }
+
+  &__searchbar {
+    background: var(--ion-color-light);
+    --background: var(--ion-color-light);
+    --padding-start: 0;
+    --min-height: 50px;
+  }
+}
+
+
+
+.scroll {
+  margin: 5px 0;
+}
+
+
+
+.select .item-native {
+  flex-direction: column;
 }

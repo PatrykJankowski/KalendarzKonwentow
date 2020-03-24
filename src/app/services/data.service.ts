@@ -1,83 +1,68 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-export interface Message {
-  fromName: string;
-  subject: string;
-  date: string;
-  id: number;
-  read: boolean;
-}
+import { Plugins } from '@capacitor/core';
+import { Observable } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+
+import { Event, EventDetails } from '@models/event.model';
+import { NetworkService } from '@services/network.service';
+
+const { Storage } = Plugins;
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  public messages: Message[] = [
-    {
-      fromName: 'Matt Chorsey',
-      subject: 'New event: Trip to Vegas',
-      date: '9:32 AM',
-      id: 0,
-      read: false
-    },
-    {
-      fromName: 'Lauren Ruthford',
-      subject: 'Long time no chat',
-      date: '6:12 AM',
-      id: 1,
-      read: false
-    },
-    {
-      fromName: 'Jordan Firth',
-      subject: 'Report Results',
-      date: '4:55 AM',
-      id: 2,
-      read: false
-    },
-    {
-      fromName: 'Bill Thomas',
-      subject: 'The situation',
-      date: 'Yesterday',
-      id: 3,
-      read: false
-    },
-    {
-      fromName: 'Joanne Pollan',
-      subject: 'Updated invitation: Swim lessons',
-      date: 'Yesterday',
-      id: 4,
-      read: false
-    },
-    {
-      fromName: 'Andrea Cornerston',
-      subject: 'Last minute ask',
-      date: 'Yesterday',
-      id: 5,
-      read: false
-    },
-    {
-      fromName: 'Moe Chamont',
-      subject: 'Family Calendar - Version 1',
-      date: 'Last Week',
-      id: 6,
-      read: false
-    },
-    {
-      fromName: 'Kelly Richardson',
-      subject: 'Placeholder Headhots',
-      date: 'Last Week',
-      id: 7,
-      read: false
-    }
-  ];
+  private readonly API_URL: string = 'https://softcraft.it/api.php';
+  private readonly API_STORAGE_KEY: string = 'KK';
 
-  constructor() { }
+  constructor(private http: HttpClient, private networkService: NetworkService) {}
 
-  public getMessages(): Message[] {
-    return this.messages;
+  public getEvents(year: string = ''): Observable<Event[]> {
+    return this.http.get(`${this.API_URL}?year=${year}`)
+      .pipe(
+        tap((event: Event) => this.setLocalData(`events${year}`, event)),
+        catchError(() => {
+          return this.networkService.getCurrentNetworkStatus().then(connectionStatus => {
+            if (!connectionStatus) {
+              return this.getLocalData(`events${year}`);
+            }
+          });
+        })
+      )
   }
 
-  public getMessageById(id: number): Message {
-    return this.messages[id];
+  public getEventDetails(id: number): Observable<EventDetails[]> {
+    return this.http.get(`${this.API_URL}?id=${id}`)
+      .pipe(
+        tap((eventDetails: Event) => this.setLocalData(`event-details-${id}`, eventDetails)),
+        catchError(() => {
+          return this.networkService.getCurrentNetworkStatus().then(connectionStatus => {
+            if (!connectionStatus) {
+              return this.getLocalData(`event-details-${id}`);
+            }
+          });
+        })
+      )
+  }
+
+  private async setLocalData(key: string, data: Event): Promise<any> {
+    try {
+      await Storage.set({
+        key: `${this.API_STORAGE_KEY}-${key}`, value: JSON.stringify({data})
+      });
+    } catch(err) {
+      return err;
+    }
+  }
+
+  private async getLocalData(key: string): Promise<any> {
+    try {
+      const storageData = await Storage.get({ key: `${this.API_STORAGE_KEY}-${key}` });
+      return JSON.parse(storageData.value).data;
+    } catch(err) {
+      return [];
+    }
   }
 }

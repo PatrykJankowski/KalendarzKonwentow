@@ -1,28 +1,41 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DataService, Message } from '../services/data.service';
+
+import { Calendar } from '@ionic-native/calendar/ngx';
+
+import { EventDetails } from '@models/event.model';
+import { FavouriteService } from '@services/favourites.service';
 
 @Component({
   selector: 'app-view-message',
   templateUrl: './view-message.page.html',
   styleUrls: ['./view-message.page.scss'],
 })
-export class ViewMessagePage implements OnInit {
-  public message: Message;
+export class ViewMessagePage {
+  public eventDetails: EventDetails = this.activatedRoute.snapshot.data.eventDetails[0];
 
-  constructor(
-    private data: DataService,
-    private activatedRoute: ActivatedRoute
-  ) { }
+  constructor(private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private calendar: Calendar) {}
 
-  ngOnInit() {
-    const id = this.activatedRoute.snapshot.paramMap.get('id');
-    this.message = this.data.getMessageById(parseInt(id, 10));
+   public addToCalendar(): void {
+      this.calendar.createEventInteractively(
+          this.eventDetails.name, this.eventDetails.location, this.eventDetails.description,
+          new Date(this.eventDetails.date_begin), new Date(this.eventDetails.date_end)
+      ).then();
+    }
+
+  public loadDefaultImage(event): void {
+    event.target.src = '/assets/no-image.jpg';
   }
 
-  getBackButtonText() {
-    const win = window as any;
-    const mode = win && win.Ionic && win.Ionic.mode;
-    return mode === 'ios' ? 'Inbox' : '';
+  public addToFavourites(id: number): void {
+    this.favouritesService.addToFavorites(id).then();
+  }
+
+  public removeFromFavourites(id: number): void {
+    this.favouritesService.removeFromFavourites(id).then();
+  }
+
+  public isFavourite(id: number) {
+    return this.favouritesService.isFavourite(id)
   }
 }

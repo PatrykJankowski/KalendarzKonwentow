@@ -1,32 +1,38 @@
-<!--<ion-item *ngIf="message" [routerLink]="'/message/' + message.id" [detail]="false">
-</ion-item>-->
+<div class="event-card">
+  <ion-button fill="clear" class="event-card__fav" (click)="addToFavourites(event.id)" *ngIf="!favouritesService.isFavourite(event.id)" >
+    <ion-icon name="star-outline" slot="icon-only" class="event-card__icon"></ion-icon>
+  </ion-button>
+  <ion-button fill="clear" class="event-card__fav" (click)="removeFromFavourites(event.id)" *ngIf="favouritesService.isFavourite(event.id)">
+    <ion-icon name="star" slot="icon-only" class="event-card__icon"></ion-icon>
+  </ion-button>
 
+  <ion-card *ngIf="event" [routerLink]="'/event-details/' + event.id" class="event-card__card">
+    <ion-card-content class="event-card__inner">
+      <ion-grid class="ion-no-padding">
+        <ion-row class="ion-align-items-center">
+          <ion-col size="5">
+            <ion-thumbnail class="event-card__thumb">
+              <ion-img [src]="event.image" (ionError)="loadDefaultImage($event)" alt="Image - {{ event.name}}"></ion-img>
 
-<ion-card *ngIf="event" [routerLink]="'/event-details/' + event.id" class="event-card__card">
-  <ion-card-content class="event-card__inner">
-    <ion-grid class="ion-no-padding">
-      <ion-row class="ion-align-items-center">
-        <ion-col size="5">
-          <ion-thumbnail class="event-card__thumb">
-            <ion-img [src]="event.image" alt="Image - {{ event.name}}"></ion-img>
-          </ion-thumbnail>
-        </ion-col>
-        <ion-col size="7" class="event-card__description ion-no-padding">
-          <ion-row class="ion-text-center">
-            <h2 class="event-card__title">{{ (event.name) }}</h2>
-          </ion-row>
-          <ion-row class="ion-text-center">
-            <h4 class="event-card__category">{{ event.event_type }}</h4>
-          </ion-row>
-          <ion-row class="ion-text-center">
-            <h3 class="event-card__location">{{ event.location }}</h3>
-          </ion-row>
-          <ion-row class="ion-justify-content-end">
-            <time class="event-card__date" *ngIf="event.date_end <= event.date_begin">{{ event.date_begin | date: "dd.MM.y" }}</time>
-            <time class="event-card__date" *ngIf="event.date_end > event.date_begin">{{ event.date_begin | date: "dd.MM" }} - {{ event.date_end | date: "dd.MM.y" }}</time>
-          </ion-row>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ion-card-content>
-</ion-card>
+            </ion-thumbnail>
+          </ion-col>
+          <ion-col size="7" class="event-card__description ion-no-padding">
+            <ion-row class="ion-text-center">
+              <h2 class="event-card__title">{{ (event.name) }}</h2>
+            </ion-row>
+            <ion-row class="ion-text-center">
+              <h4 class="event-card__category">{{ event.event_type }}</h4>
+            </ion-row>
+            <ion-row class="ion-text-center">
+              <h3 class="event-card__location">{{ event.location }}</h3>
+            </ion-row>
+            <ion-row class="ion-justify-content-end">
+              <time class="event-card__date" *ngIf="event.date_end <= event.date_begin">{{ event.date_begin | date: "dd.MM.y" }}</time>
+              <time class="event-card__date" *ngIf="event.date_end > event.date_begin">{{ event.date_begin | date: "dd.MM" }} - {{ event.date_end | date: "dd.MM.y" }}</time>
+            </ion-row>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+</div>

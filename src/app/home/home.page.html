@@ -1,25 +1,17 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Inbox
+    <ion-title class="header__title">
+      <img src="assets/logo.png" alt="Konwenty Południowe" class="header__logo">
     </ion-title>
-  </ion-toolbar>
+
+    <app-filters [events]="events"></app-filters>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">
-        Inbox
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
-  
-  <ion-list>
-    <app-message *ngFor="let message of getMessages()" [message]="message"></app-message>
-  </ion-list>
+
+  <ion-virtual-scroll class="scroll" [items]="getEvents()" approxItemHeight="126px">
+    <app-event-list-card *virtualItem="let event; let itemBounds = bounds;" [event]="event" style="opacity:1"></app-event-list-card>
+  </ion-virtual-scroll>
 </ion-content>

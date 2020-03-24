@@ -55,7 +55,44 @@
       "as-needed"
     ],
     "object-literal-sort-keys": false,
-    "ordered-imports": false,
+    "ordered-imports": [
+      true,
+      {
+        "grouped-imports": true,
+        "groups": [
+          {
+            "name": "angular",
+            "match": "^@angular",
+            "order": 10
+          },
+          {
+            "name": "ionic",
+            "match": "^(@ionic|ionic)",
+            "order": 20
+          },
+          {
+            "name": "internal modules",
+            "match": "^@(app|components|enums|guards|models|pages|pipes|services)",
+            "order": 40
+          },
+          {
+            "name": "current dir",
+            "match": "^[.]",
+            "order": 50
+          },
+          {
+            "name": "parent dir",
+            "match": "^[.][.]",
+            "order": 60
+          },
+          {
+            "name": "node modules",
+            "match": ".*",
+            "order": 30
+          }
+        ]
+      }
+    ],
     "quotemark": [
       true,
       "single"

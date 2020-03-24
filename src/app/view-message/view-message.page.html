@@ -1,29 +1,73 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons>
-      <ion-back-button [text]="getBackButtonText()" defaultHref="/"></ion-back-button>
+      <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" *ngIf="message">
-  <ion-item>
-    <ion-icon name="person-circle" color="primary"></ion-icon>
-    <ion-label class="ion-text-wrap">
-      <h2>
-        {{ message.fromName }}
-        <span class="date">
-          <ion-note>{{ message.date }}</ion-note>
-        </span>
-      </h2>
-      <h3>To: <ion-note>Me</ion-note></h3>
-    </ion-label>
-  </ion-item>
-  
-  <div class="ion-padding">
-    <h1>{{ message.subject }}</h1>
-    <p>
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    </p>
-  </div>
+<ion-content class="event-details">
+  <ion-card class="event-details__header ion-no-margin">
+    <ion-card-content class="event-details__inner">
+      <ion-grid>
+        <ion-row>
+          <ion-card-title class="event-details__title">{{ eventDetails ? eventDetails.name : 'Brak danych w wersji offline' }}</ion-card-title>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-thumbnail class="event-details__thumb">
+            <ion-img [src]="eventDetails ? eventDetails.image : 'no-image'" (ionError)="loadDefaultImage($event)" alt="Obrazek - {{ eventDetails ? eventDetails.name : 'brak'}}"></ion-img>
+          </ion-thumbnail>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="event-details__card">
+    <ion-card-content *ngIf="eventDetails">
+      <div class="event-details__icons">
+        <ion-icon (click)="addToCalendar()" name="alarm" class="event-details__icon"></ion-icon>
+        <a *ngIf="eventDetails.www_url" href="{{ eventDetails.www_url }}"><ion-icon name="globe" class="event-details__icon"></ion-icon></a>
+        <a *ngIf="eventDetails.event_url" href="{{ eventDetails.event_url }}"><ion-icon name="calendar" class="event-details__icon"></ion-icon></a>
+        <a *ngIf="eventDetails.fb_url" href="{{ eventDetails.fb_url }}"><ion-icon name="logo-facebook" class="event-details__icon"></ion-icon></a>
+
+        <ion-button fill="clear" class="event-details__fav" (click)="addToFavourites(eventDetails.id)" *ngIf="!isFavourite(eventDetails.id)">
+          <ion-icon name="star-outline" slot="icon-only" class="event-details__favicon"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" class="event-details__fav" (click)="removeFromFavourites(eventDetails.id)" *ngIf="isFavourite(eventDetails.id)">
+          <ion-icon name="star" slot="icon-only" class="event-details__favicon"></ion-icon>
+        </ion-button>
+      </div>
+
+      <h4 class="event-details__caption">Konwencja:</h4>
+      <p>{{ eventDetails.event_type }}</p>
+
+      <h4 class="event-details__caption">Data:</h4>
+      <p *ngIf="eventDetails.date_end == eventDetails.date_begin; else date_end">{{ eventDetails.date_begin }}</p>
+      <ng-template #date_end>
+        <p>{{ eventDetails.date_begin | date: "dd.MM.y" }} - {{ eventDetails.date_end | date: "dd.MM.y"}}</p>
+      </ng-template>
+
+      <h4 class="event-details__caption">Adres:</h4>
+      <a class="event-details__link" href="https://www.google.com/maps/search/?api=1&query={{ eventDetails.address }},{{ eventDetails.location }}">
+        <ng-container *ngIf="eventDetails.address==null; else full_address">{{ eventDetails.location }} <ion-icon name="exit"></ion-icon></ng-container>
+        <ng-template #full_address>
+          <ng-container>{{ eventDetails.address }}, {{ eventDetails.location }} <ion-icon name="exit"></ion-icon></ng-container>
+        </ng-template>
+      </a>
+
+      <ng-container *ngIf="eventDetails.price">
+        <h4 class="event-details__caption">Cena:</h4>
+        <div [outerHTML]="eventDetails.price"></div>
+      </ng-container>
+
+      <ng-container *ngIf="eventDetails.description">
+        <h4 class="event-details__caption">Opis:</h4>
+        <div [outerHTML]="eventDetails.description"></div>
+      </ng-container>
+    </ion-card-content>
+
+    <ion-card-content *ngIf="!eventDetails">
+      <h4 class="event-details__caption">Brak danych w trybie offline. Połącz się z Internetem i spróbuj ponownie.</h4>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

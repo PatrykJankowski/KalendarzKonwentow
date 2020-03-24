@@ -1,0 +1,73 @@
+<ion-toolbar class="toolbar">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="3">
+        <ion-item lines="none" class="ion-no-padding">
+          <div class="filter">
+            <ion-label class="filter__label">Kategoria:</ion-label>
+            <ion-select class="filter__option" ok-text="Potwierdź" cancel-text="Anuluj" [formControl]="categoryFilter">
+              <ion-select-option value="" selected>Wszystkie</ion-select-option>
+              <ion-select-option *ngFor="let category of getCategories()" value="{{ category }}">{{ category }}</ion-select-option>
+            </ion-select>
+            <div class="filter__dots">
+              <span class="filter__dot"></span>
+              <span class="filter__dot"></span>
+              <span class="filter__dot"></span>
+            </div>
+          </div>
+        </ion-item>
+      </ion-col>
+
+      <ion-col size="3">
+        <ion-item lines="none" class="ion-no-padding">
+          <div class="filter">
+            <ion-label class="filter__label">Miasto:</ion-label>
+            <ion-select class="filter__option" ok-text="Potwierdź" cancel-text="Anuluj" [formControl]="locationFilter">
+              <ion-select-option value="" selected>Wszystkie</ion-select-option>
+              <ion-select-option *ngFor="let location of locations" value="{{ location }}">{{ location }}</ion-select-option>
+            </ion-select>
+            <div class="filter__dots">
+              <span class="filter__dot"></span>
+              <span class="filter__dot"></span>
+              <span class="filter__dot"></span>
+            </div>
+          </div>
+        </ion-item>
+      </ion-col>
+
+      <ion-col size="3">
+        <ion-item lines="none" class="ion-no-padding">
+          <div class="filter">
+            <ion-label class="filter__label">Data:</ion-label>
+            <ion-select class="filter__option" ok-text="Potwierdź" cancel-text="Anuluj" [formControl]="dateFilter">
+              <ion-select-option value="" selected>Nadchodzące</ion-select-option>
+              <ion-select-option *ngFor="let date of dates" value="{{ date }}">{{ date }}</ion-select-option>
+            </ion-select>
+            <div class="filter__dots">
+              <span class="filter__dot"></span>
+              <span class="filter__dot"></span>
+              <span class="filter__dot"></span>
+            </div>
+          </div>
+        </ion-item>
+      </ion-col>
+
+      <ion-col size="3">
+        <ion-item lines="none" class="ion-no-padding">
+          <div class="filter">
+            <div class="filter__label filter__label--fav">Ulubione:</div>
+            <ion-icon name="star-outline" class="filter__fav" *ngIf="!getFavouritesFlag()" (click)="favouritesFilter()"></ion-icon>
+            <ion-icon name="star" class="filter__fav" *ngIf="getFavouritesFlag()" (click)="favouritesFilter()"></ion-icon>
+          </div>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-searchbar placeholder="Szukaj..." class="searchbar" [formControl]="searchField"></ion-searchbar>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+</ion-toolbar>

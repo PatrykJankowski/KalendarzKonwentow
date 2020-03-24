@@ -2,18 +2,18 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { HomePage } from './home.page';
-import { EventsResolver } from './events.resolver';
+import { HomeResolver } from './home.resolver';
 
 const routes: Routes = [
   {
     path: '',
     component: HomePage,
-    resolve: { events: EventsResolver }
+    resolve: { events: HomeResolver }
   },
   {
     path: 'event-details/:id',
-    loadChildren: '../event-details/event-details.module#EventDetailsModule'
-  }
+    loadChildren: () => import('../view-message/view-message.module').then( m => m.ViewMessagePageModule)
+  },
 ];
 
 @NgModule({
@@ -22,4 +22,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class EventsRouterModule {}
+export class HomeRouterModule {}

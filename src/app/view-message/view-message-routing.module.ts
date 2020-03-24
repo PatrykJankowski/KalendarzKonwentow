@@ -1,17 +1,15 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 import { ViewMessagePage } from './view-message.page';
+import { EventDetailsResolver } from './event-details.resolver';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: ViewMessagePage
-  }
+  { path: '', component: ViewMessagePage, resolve: { eventDetails: EventDetailsResolver } }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
-export class ViewMessagePageRoutingModule {}
+export class EventDetailsRouterModule {}
