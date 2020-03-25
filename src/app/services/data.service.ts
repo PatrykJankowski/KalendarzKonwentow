@@ -17,6 +17,8 @@ export class DataService {
   private readonly API_URL: string = 'https://softcraft.it/api.php';
   private readonly API_STORAGE_KEY: string = 'KK';
 
+  public cities = [];
+
   constructor(private http: HttpClient, private networkService: NetworkService) {}
 
   public getEvents(year: string = ''): Observable<Event[]> {

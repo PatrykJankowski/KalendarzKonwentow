@@ -5,16 +5,17 @@ import { Calendar } from '@ionic-native/calendar/ngx';
 
 import { EventDetails } from '@models/event.model';
 import { FavouriteService } from '@services/favourites.service';
+import { FiltersService } from '@services/filters.service';
 
 @Component({
-  selector: 'app-view-message',
-  templateUrl: './view-message.page.html',
-  styleUrls: ['./view-message.page.scss'],
+  selector: 'app-event-details',
+  templateUrl: './event-details.page.html',
+  styleUrls: ['./event-details.page.scss'],
 })
-export class ViewMessagePage {
+export class EventDetailsPage {
   public eventDetails: EventDetails = this.activatedRoute.snapshot.data.eventDetails[0];
 
-  constructor(private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private calendar: Calendar) {}
+  constructor(private activatedRoute: ActivatedRoute, private filtersService: FiltersService, public favouritesService: FavouriteService, private calendar: Calendar) {}
 
    public addToCalendar(): void {
       this.calendar.createEventInteractively(
@@ -28,11 +29,19 @@ export class ViewMessagePage {
   }
 
   public addToFavourites(id: number): void {
-    this.favouritesService.addToFavorites(id).then();
+    this.favouritesService.addToFavorites(id).then(() => {
+      if (this.favouritesService.getFavouritesOnlyFlag()) {
+        this.filtersService.filterEvents(this.filtersService.filteredEvents)
+      }
+    });
   }
 
   public removeFromFavourites(id: number): void {
-    this.favouritesService.removeFromFavourites(id).then();
+    this.favouritesService.removeFromFavourites(id).then(() => {
+      if (this.favouritesService.getFavouritesOnlyFlag()) {
+        this.filtersService.filterEvents(this.filtersService.filteredEvents)
+      }
+    });
   }
 
   public isFavourite(id: number) {

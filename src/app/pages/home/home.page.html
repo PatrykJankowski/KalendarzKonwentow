@@ -2,11 +2,6 @@
     <ion-title class="header__title">
       <img src="assets/logo.png" alt="Konwenty Południowe" class="header__logo">
     </ion-title>
-
-<!--    <button (click)="range()">50 km</button>
-
-    {{ result }}-->
-
     <app-filters [events]="events"></app-filters>
 </ion-header>
 
@@ -18,6 +13,4 @@
   <ion-virtual-scroll class="scroll" [items]="getEvents()" approxItemHeight="126px">
     <app-event-list-card *virtualItem="let event; let itemBounds = bounds;" [event]="event" style="opacity:1"></app-event-list-card>
   </ion-virtual-scroll>
-
-  <!--<app-event-list-card *ngFor="let event of getEvents();" [event]="event"></app-event-list-card>-->
 </ion-content>

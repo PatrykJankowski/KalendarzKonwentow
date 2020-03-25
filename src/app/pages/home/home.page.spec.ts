@@ -3,7 +3,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 
 import { HomePage } from './home.page';
-import { EventListCardComponentModule } from '../event-list-card/event-list-card.module';
+import { EventListCardComponentModule } from '../../components/event-list-card/event-list-card.module';
 
 describe('HomePage', () => {
   let component: HomePage;

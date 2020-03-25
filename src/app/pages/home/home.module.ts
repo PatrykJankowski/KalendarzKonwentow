@@ -4,8 +4,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { EventListCardComponentModule } from '../event-list-card/event-list-card.module';
-import { FiltersComponentModule } from '../filters/filters.module';
+import { EventListCardComponentModule } from '../../components/event-list-card/event-list-card.module';
+import { FiltersComponentModule } from '../../components/filters/filters.module';
 import { HomePage } from './home.page';
 import { HomeRouterModule } from './home.router';
 

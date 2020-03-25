@@ -12,7 +12,7 @@ const routes: Routes = [
   },
   {
     path: 'event-details/:id',
-    loadChildren: () => import('../view-message/view-message.module').then( m => m.ViewMessagePageModule)
+    loadChildren: () => import('../event-details/event-details.module').then(m => m.EventDetailsPageModule)
   },
 ];
 

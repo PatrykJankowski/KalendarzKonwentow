@@ -21,9 +21,14 @@ registerLocaleData(localePl);
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule,
+  imports: [
+    BrowserModule,
+    IonicModule.forRoot(),
+    AppRoutingModule,
+    HttpClientModule,
     IonicImageLoader.forRoot(),
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })],
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+  ],
   providers: [
     Calendar,
     WebView,
