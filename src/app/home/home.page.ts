@@ -8,6 +8,7 @@ import { Event } from '@models/event.model';
 import { DataService } from '@services/data.service';
 import { FavouriteService } from '@services/favourites.service';
 import { FiltersService } from '@services/filters.service';
+import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
 
 const { SplashScreen } = Plugins;
 
@@ -18,13 +19,15 @@ const { SplashScreen } = Plugins;
 })
 export class HomePage implements OnInit {
   public events: Array<Event> = [];
+  public result = [];
 
   // todo: originalevents and filtered, bo laduje za pierwszym razem z filtra od razu        jux??
 
-  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private filtersService: FiltersService) {}
+  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private filtersService: FiltersService,
+              private nativeGeocoder: NativeGeocoder) {}
 
   public ngOnInit() {
-    SplashScreen.hide();
+    //SplashScreen.hide();
 
     this.events = this.activatedRoute.snapshot.data.events;
 
@@ -38,6 +41,68 @@ export class HomePage implements OnInit {
       }
     });
   }
+
+
+
+  public range() {
+    let cities = [];
+    let coords = [];
+
+
+    for(let event of this.events) {
+      if (cities.indexOf(event.location) === -1) { cities.push(event.location); }
+    }
+
+
+    var rad = function(x) {
+      return x * Math.PI / 180;
+    };
+
+    var getDistance = function(p1, p2) {
+      var R = 6378137; // Earth’s mean radius in meter
+      var dLat = rad(p2[0] - p1[0]);
+      var dLong = rad(p2[1] - p1[1]);
+      var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(rad(p1[0])) * Math.cos(rad(p2[0])) *
+          Math.sin(dLong / 2) * Math.sin(dLong / 2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      var d = R * c;
+      return d; // returns the distance in meter
+    };
+
+    let options: NativeGeocoderOptions = {
+      useLocale: true,
+      maxResults: 1
+    };
+
+
+    let lat;
+    let long;
+
+    this.nativeGeocoder.forwardGeocode('Warszawa', options)
+        .then((result: NativeGeocoderResult[]) => {
+          console.log('The coordinates are latitude=' + result[0].latitude + ' and longitude=' + result[0].longitude);
+          lat = result[0].latitude;
+          long = result[0].longitude
+        })
+        .catch((error: any) => console.log(error));
+
+
+    for(let city of cities) {
+      this.nativeGeocoder.forwardGeocode(city, options)
+          .then((result: NativeGeocoderResult[]) => {
+            console.log(getDistance([lat, long], [result[0].latitude, result[0].longitude]));
+            if (getDistance([lat, long], [result[0].latitude, result[0].longitude]) < 100000) {
+              console.log(city);
+              this.result.push(city);
+            }
+          })
+          .catch((error: any) => console.log(error));
+    }
+
+    return this.result;
+  }
+
 
   public ionViewWillEnter(): void {
     // Remove dropdown arrow; hope for better solution in future Ionic version

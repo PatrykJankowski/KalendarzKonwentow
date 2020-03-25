@@ -1,0 +1,48 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/*.js",
+          "/*.ttf",
+          "/svg/arrow-back-sharp.svg"
+        ],
+        "urls": [
+          "**/images/joodb/db1/*.jpg"
+        ]
+      }
+    }, {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**",
+          "/svg/**",
+          "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "dynamicResources",
+      "urls": [
+        "**/images/joodb/db1/*.jpg"
+      ],
+      "cacheConfig": {
+        "maxSize": 1000,
+        "maxAge": "30d",
+        "strategy": "performance"
+      }
+    }
+  ]
+}

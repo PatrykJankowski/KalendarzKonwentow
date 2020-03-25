@@ -45,6 +45,15 @@
   &__thumb {
     height: 96px;
     align-self: center;
+    background-image: url(/assets/no-image.jpg);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: #fff;
+  }
+
+  &__img {
+    background-position: center;
   }
 
   &__title {

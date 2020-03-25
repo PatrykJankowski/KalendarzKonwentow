@@ -12,8 +12,9 @@
         <ion-row class="ion-align-items-center">
           <ion-col size="5">
             <ion-thumbnail class="event-card__thumb">
-              <ion-img [src]="event.image" (ionError)="loadDefaultImage($event)" alt="Image - {{ event.name}}"></ion-img>
-
+              <ion-img [src]="event.image"  alt="Image - {{ event.name}}"></ion-img>
+              <!--<img-loader src="{{ event.image }}" backgroundSize="cover" class="event-card__img"></img-loader>-->
+              <!--<img src="{{ event.image }}" alt="Image - {{ event.name}}" crossorigin="anonymous">-->
             </ion-thumbnail>
           </ion-col>
           <ion-col size="7" class="event-card__description ion-no-padding">
