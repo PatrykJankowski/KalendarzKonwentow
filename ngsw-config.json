@@ -14,9 +14,6 @@
           "/*.js",
           "/*.ttf",
           "/svg/arrow-back-sharp.svg"
-        ],
-        "urls": [
-          "**/images/joodb/db1/*.jpg"
         ]
       }
     }, {

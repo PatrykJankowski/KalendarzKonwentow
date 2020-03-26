@@ -32,4 +32,8 @@ export class EventListCardComponent {
   public loadDefaultImage(event): void {
     event.target.src = '/assets/no-image.jpg';
   }
+
+  public removeWww(url) {
+    return url.replace("/www.", "/");
+  }
 }

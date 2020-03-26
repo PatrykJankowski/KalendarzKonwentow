@@ -16,7 +16,11 @@
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-thumbnail class="event-details__thumb">
+<!--
             <ion-img [src]="eventDetails ? eventDetails.image : 'no-image'" (ionError)="loadDefaultImage($event)" alt="Obrazek - {{ eventDetails ? eventDetails.name : 'brak'}}"></ion-img>
+-->
+            <img src="https://softcraft.it/ss.php?url={{ eventDetails ? eventDetails.image : 'no-image'}}" alt="Image - {{ eventDetails ? eventDetails.name : 'brak'}}" crossorigin="anonymous">
+
           </ion-thumbnail>
         </ion-row>
       </ion-grid>
