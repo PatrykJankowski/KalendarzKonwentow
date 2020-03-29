@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { Plugins } from '@capacitor/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 import { Event, EventDetails } from '@models/event.model';
@@ -16,16 +16,23 @@ const { Storage } = Plugins;
 export class DataService {
   private readonly API_URL: string = 'https://softcraft.it/api.php';
   private readonly API_STORAGE_KEY: string = 'KK';
-
-  public cities = [];
+  public responseCache = new Map();
 
   constructor(private http: HttpClient, private networkService: NetworkService) {}
 
-  public getEvents(year: string = ''): Observable<Event[]> {
+  public getEvents(year: string = '', refreshData = true): Observable<Event[]> {
+    if (!refreshData) {
+      const eventsFromCache = this.responseCache.get(URL);
+      if (eventsFromCache) {
+        return of(eventsFromCache);
+      }
+    }
+
     return this.http.get(`${this.API_URL}?year=${year}`)
       .pipe(
-        tap((event: Event) => this.setLocalData(`events${year}`, event)),
-        catchError(() => {
+        tap((event: Event) => {this.setLocalData(`events${year}`, event); this.responseCache.set(URL, event)}),
+        catchError((err) => {
+          console.log(err);
           return this.networkService.getCurrentNetworkStatus().then(connectionStatus => {
             if (!connectionStatus) {
               return this.getLocalData(`events${year}`);
@@ -59,7 +66,7 @@ export class DataService {
     }
   }
 
-  private async getLocalData(key: string): Promise<any> {
+  public async getLocalData(key: string): Promise<any> {
     try {
       const storageData = await Storage.get({ key: `${this.API_STORAGE_KEY}-${key}` });
       return JSON.parse(storageData.value).data;

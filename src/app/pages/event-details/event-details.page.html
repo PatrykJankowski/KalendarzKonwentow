@@ -1,5 +1,5 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-buttons>
       <ion-back-button defaultHref="/"></ion-back-button>
       <ion-title>Szczegóły wydarzenia</ion-title>
@@ -16,11 +16,7 @@
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-thumbnail class="event-details__thumb">
-<!--
-            <ion-img [src]="eventDetails ? eventDetails.image : 'no-image'" (ionError)="loadDefaultImage($event)" alt="Obrazek - {{ eventDetails ? eventDetails.name : 'brak'}}"></ion-img>
--->
-            <img src="https://softcraft.it/ss.php?url={{ eventDetails ? eventDetails.image : 'no-image'}}" alt="Image - {{ eventDetails ? eventDetails.name : 'brak'}}" crossorigin="anonymous">
-
+            <ion-img [src]="img" (ionError)="loadDefaultImage($event)" alt="Obrazek - {{ eventDetails ? eventDetails.name : 'brak'}}"></ion-img>
           </ion-thumbnail>
         </ion-row>
       </ion-grid>
@@ -35,10 +31,10 @@
         <a *ngIf="eventDetails.event_url" href="{{ eventDetails.event_url }}"><ion-icon name="calendar" class="event-details__icon"></ion-icon></a>
         <a *ngIf="eventDetails.fb_url" href="{{ eventDetails.fb_url }}"><ion-icon name="logo-facebook" class="event-details__icon"></ion-icon></a>
 
-        <ion-button fill="clear" class="event-details__fav" (click)="addToFavourites(eventDetails.id)" *ngIf="!isFavourite(eventDetails.id)">
+        <ion-button fill="clear" class="event-details__fav" (click)="addToFavourites(eventDetails)" *ngIf="!isFavourite(eventDetails.id)">
           <ion-icon name="star-outline" slot="icon-only" class="event-details__favicon"></ion-icon>
         </ion-button>
-        <ion-button fill="clear" class="event-details__fav" (click)="removeFromFavourites(eventDetails.id)" *ngIf="isFavourite(eventDetails.id)">
+        <ion-button fill="clear" class="event-details__fav" (click)="removeFromFavourites(eventDetails)" *ngIf="isFavourite(eventDetails.id)">
           <ion-icon name="star" slot="icon-only" class="event-details__favicon"></ion-icon>
         </ion-button>
       </div>

@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
 import { Event } from '@models/event.model';
@@ -14,8 +14,12 @@ import { FiltersService } from '@services/filters.service';
 })
 export class FiltersComponent implements OnInit {
   @Input() events: Array<Event>;
+  @Output() eventsFiltered = new EventEmitter();
 
-  public filteredEvents;
+  @Input() enableDate: boolean = false;
+  @Input() fav: boolean = false;
+
+  public originalEvents: Array<Event>;
 
   public categoryFilter: FormControl;
   public locationFilter: FormControl;
@@ -26,10 +30,26 @@ export class FiltersComponent implements OnInit {
   public locations: Array<string> = [];
   public dates: Array<number> = [];
 
+  public category = '';
+  public location = '';
+  public date = '';
+  public searchingTerm = '';
+
+  public maxDate: number = new Date().getFullYear();
+
   constructor(private filtersService: FiltersService, private dataService: DataService, private favouritesService: FavouriteService) {}
 
   ngOnInit() {
-    this.setFilteredEvents(); // todo: chyba nie bedzie potrzebne jak da sie w home original i filtered
+    console.log('filters:', this.events);
+    this.originalEvents = this.events;
+
+    this.favouritesService.favouritesChange.subscribe(value => {
+      console.log('filters change: ', value);
+      this.originalEvents = value;
+      this.initFilters()
+    });
+
+    this.filterEvents(this.originalEvents);
     this.initFilters();
 
     this.categoryFilter = new FormControl();
@@ -49,9 +69,11 @@ export class FiltersComponent implements OnInit {
 
     this.dateFilter.valueChanges.subscribe((date: string) => {
       this.setDate(date);
+
       this.dataService.getEvents(date)
         .subscribe((events: Array<Event>) => {
           this.events = events;
+          this.originalEvents = this.events;
           this.setFilteredEvents();
         });
     });
@@ -62,9 +84,19 @@ export class FiltersComponent implements OnInit {
     });
   }
 
+  ngOnChanges() {
+    this.originalEvents = this.events;
+    console.log(this.events);
+    this.initFilters();
+    this.filterEvents(this.events)
+  }
+
   private initFilters(): void {
-    if (this.events) {
-      for (const event of this.events) { // todo: lista kategori, miast itp. z api
+    this.categories = [];
+    this.locations = [];
+
+    if (this.originalEvents) {
+      for (const event of this.originalEvents) { // todo: lista kategori, miast itp. z api
         const category: string = event.event_type;
         const location: string = event.location;
         const year: number = parseInt(formatDate(event.date_end, 'yyyy', 'pl'), 10);
@@ -74,10 +106,10 @@ export class FiltersComponent implements OnInit {
           this.dates.push(year);
         }
       }
-      const maxDate: number = Math.max(...this.dates);
+
       this.dates = [];
 
-      for (let year: number = maxDate; year >= 2014; year--) {
+      for (let year: number = this.maxDate - 1; year >= 2014; year--) {
         this.dates.push(year);
       }
 
@@ -86,38 +118,56 @@ export class FiltersComponent implements OnInit {
     }
   }
 
-  private setFilteredEvents(): void {
-    this.filtersService.filterEvents(this.events);
-  }
-
-  private setCategory(category: string): void {
-    this.filtersService.setCategory(category);
-  }
-
-  private setLocation(location: string): void {
-    this.filtersService.setLocation(location);
-  }
-
-  private setDate(date: string): void {
-    this.filtersService.setDate(date);
-  }
-
-  private setSearchingTerm(searchingTerm: string): void {
-    this.filtersService.setSearchingTerm(searchingTerm);
-  }
-
   public getCategories() {
     return this.categories;
   }
 
-  public getFavouritesFlag() {
-    return this.favouritesService.favouritesEventsOnly;
+  public setCategory(category: string): void {
+    this.category = category;
   }
 
-  public favouritesFilter(): any {
-    this.favouritesService.setFavouritesOnlyFlag();
-    this.setFilteredEvents();
+  public setLocation(location: string): void {
+    this.location = location;
+  }
+
+  public setDate(date: string): void {
+    this.date = date;
+  }
+
+  public setSearchingTerm(searchingTerm: string): void {
+    this.searchingTerm = searchingTerm;
+  }
+
+  public setFilteredEvents(): void {
+    this.filterEvents(this.originalEvents);
+  }
+
+  public filterEvents(events: Array<Event>, fav = false): Array<Event> {
+    if (events === null) {
+      return [];
+    }
+
+console.log('in filtered pre', events);
+
+    const todayDate: Date = new Date();
+    let futureEvents = false;
+
+    if (!this.date && !this.enableDate) {
+      futureEvents = true;
+    }
+
+    this.events = events.filter((event: Event) => (
+      event.event_type.indexOf(this.category) > -1 &&
+      event.location.indexOf(this.location) > -1 &&
+        (
+          (futureEvents && new Date(event.date_end) >= todayDate) ||
+          (!futureEvents && !this.fav && new Date(event.date_end) < todayDate) ||
+          (this.fav)
+        )
+      )
+      && (event.name.toLowerCase().indexOf(this.searchingTerm.toLowerCase()) > -1)
+    );
+    console.log('in filtered', this.events);
+    this.eventsFiltered.emit(this.events);
   }
 }
-
-

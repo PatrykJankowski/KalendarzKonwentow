@@ -35,12 +35,12 @@
         </ion-item>
       </ion-col>
 
-      <ion-col size="3">
+      <ion-col *ngIf="enableDate" size="3">
         <ion-item lines="none" class="ion-no-padding">
           <div class="filter">
             <ion-label class="filter__label">Data:</ion-label>
             <ion-select class="filter__option" ok-text="Potwierdź" cancel-text="Anuluj" [formControl]="dateFilter">
-              <ion-select-option value="" selected>Nadchodzące</ion-select-option>
+              <ion-select-option value="">{{ maxDate }}</ion-select-option>
               <ion-select-option *ngFor="let date of dates" value="{{ date }}">{{ date }}</ion-select-option>
             </ion-select>
             <div class="filter__dots">
@@ -48,16 +48,6 @@
               <span class="filter__dot"></span>
               <span class="filter__dot"></span>
             </div>
-          </div>
-        </ion-item>
-      </ion-col>
-
-      <ion-col size="3">
-        <ion-item lines="none" class="ion-no-padding">
-          <div class="filter">
-            <div class="filter__label filter__label--fav">Ulubione:</div>
-            <ion-icon name="star-outline" class="filter__fav" *ngIf="!getFavouritesFlag()" (click)="favouritesFilter()"></ion-icon>
-            <ion-icon name="star" class="filter__fav" *ngIf="getFavouritesFlag()" (click)="favouritesFilter()"></ion-icon>
           </div>
         </ion-item>
       </ion-col>

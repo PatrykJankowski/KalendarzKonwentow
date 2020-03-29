@@ -9,11 +9,11 @@ import { FavouriteService } from '@services/favourites.service';
 import { FiltersService } from '@services/filters.service';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  selector: 'app-archival-events',
+  templateUrl: './archival-events.page.html',
+  styleUrls: ['./archival-events.page.scss'],
 })
-export class HomePage implements OnInit {
+export class ArchivalEventsPage implements OnInit {
   @Input() filteredEvents: Array<Event> = [];
 
   public events: Array<Event> = [];
@@ -22,7 +22,7 @@ export class HomePage implements OnInit {
 
   public ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events;
-    console.log('home: ', this.events);
+    console.log('archivalEvents: ', this.events);
 
     Network.addListener('networkStatusChange', (status) => {
       if(status.connected) {
@@ -32,7 +32,7 @@ export class HomePage implements OnInit {
             this.filtersService.setFilteredEvents(this.filtersService.filteredEvents);
           });
       }
-    })
+    });
   }
 
   public ionViewWillEnter(): void {
@@ -40,9 +40,9 @@ export class HomePage implements OnInit {
     const ionSelects: NodeListOf<HTMLIonSelectElement> = document.querySelectorAll('ion-select');
     ionSelects.forEach((select: HTMLIonSelectElement) => {
       select.shadowRoot.querySelectorAll('.select-icon')
-          .forEach((element: HTMLElement) => {
-            element.setAttribute('style', 'display: none');
-          });
+        .forEach((element: HTMLElement) => {
+          element.setAttribute('style', 'display: none');
+        });
     });
   }
 
@@ -56,17 +56,4 @@ export class HomePage implements OnInit {
       ev.detail.complete();
     });
   }
-
-/*  public refresh(ev) {
-      this.dataService.getEvents('', true).subscribe((s) => {
-        this.events = [{id: 1107,
-        name: "IV Pałacowy Uniwersytet Fantastyczny",
-        date_begin: "2020-06-01",
-        date_end: "2020-07-01",
-        event_type: "Fantastyka",
-        image: "https://www.konwenty-poludniowe.pl/images/joodb/db1/img1107.jpg",
-        location: "Szczecin"
-        }];
-      console.log(this.events); ev.detail.complete();});
-  }*/
 }

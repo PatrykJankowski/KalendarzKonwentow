@@ -1,28 +1,32 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-
-import { Network } from '@capacitor/core';
-
-import { Event } from '@models/event.model';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { DataService } from '@services/data.service';
+import { ActivatedRoute } from '@angular/router';
 import { FavouriteService } from '@services/favourites.service';
 import { FiltersService } from '@services/filters.service';
+import { Network } from '@capacitor/core';
+import { Event } from '@models/event.model';
+
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  selector: 'app-favourites',
+  templateUrl: './favourites.page.html',
+  styleUrls: ['./favourites.page.scss'],
 })
-export class HomePage implements OnInit {
-  @Input() filteredEvents: Array<Event> = [];
+export class FavouritesPage implements OnInit {
+  @Output() eventsChange = new EventEmitter();
 
-  public events: Array<Event> = [];
+  public events;
+
 
   constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private filtersService: FiltersService) {}
 
   public ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events;
-    console.log('home: ', this.events);
+
+
+    this.favouritesService.favouritesChange.subscribe(value => {console.log('change: ', value)});
+
+    //this.favouritesService.getFavoritesEvents().then((k) => console.log(k.valueOf()));
 
     Network.addListener('networkStatusChange', (status) => {
       if(status.connected) {
@@ -32,7 +36,13 @@ export class HomePage implements OnInit {
             this.filtersService.setFilteredEvents(this.filtersService.filteredEvents);
           });
       }
-    })
+    });
+  }
+
+  ngOnChanges() {
+    this.events = this.activatedRoute.snapshot.data.events;
+    this.eventsChange.emit(this.events);
+
   }
 
   public ionViewWillEnter(): void {
@@ -46,27 +56,10 @@ export class HomePage implements OnInit {
     });
   }
 
-  public eventsFiltered(event) {
-    this.filteredEvents = event;
+
+  public loadDefaultImage(event): void {
+    event.target.src = '/assets/no-image.jpg';
   }
 
-  public refresh(ev) {
-    this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
-      this.events = events;
-      ev.detail.complete();
-    });
-  }
 
-/*  public refresh(ev) {
-      this.dataService.getEvents('', true).subscribe((s) => {
-        this.events = [{id: 1107,
-        name: "IV Pałacowy Uniwersytet Fantastyczny",
-        date_begin: "2020-06-01",
-        date_end: "2020-07-01",
-        event_type: "Fantastyka",
-        image: "https://www.konwenty-poludniowe.pl/images/joodb/db1/img1107.jpg",
-        location: "Szczecin"
-        }];
-      console.log(this.events); ev.detail.complete();});
-  }*/
 }

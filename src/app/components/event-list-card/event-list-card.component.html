@@ -1,8 +1,8 @@
 <div class="event-card">
-  <ion-button fill="clear" class="event-card__fav" (click)="addToFavourites(event.id)" *ngIf="!favouritesService.isFavourite(event.id)" >
+  <ion-button fill="clear" class="event-card__fav" (click)="addToFavourites(event)" *ngIf="!favouritesService.isFavourite(event.id)" >
     <ion-icon name="star-outline" slot="icon-only" class="event-card__icon"></ion-icon>
   </ion-button>
-  <ion-button fill="clear" class="event-card__fav" (click)="removeFromFavourites(event.id)" *ngIf="favouritesService.isFavourite(event.id)">
+  <ion-button fill="clear" class="event-card__fav" (click)="removeFromFavourites(event)" *ngIf="favouritesService.isFavourite(event.id)">
     <ion-icon name="star" slot="icon-only" class="event-card__icon"></ion-icon>
   </ion-button>
 
@@ -12,9 +12,9 @@
         <ion-row class="ion-align-items-center">
           <ion-col size="5">
             <ion-thumbnail class="event-card__thumb">
-              <ion-img [src]="'https://softcraft.it/ss.php?url='+removeWww(event.image)" (ionError)="loadDefaultImage($event)" alt="Image - {{ event.name}}"></ion-img>
-              <!--<img-loader src="{{ event.image }}" backgroundSize="cover" class="event-card__img"></img-loader>-->
-              <!--<img src="https://softcraft.it/ss.php?url={{ event.image }}" alt="Image - {{ event.name}}" crossorigin="anonymous">-->
+              <ion-img [src]="removeWww(event.image)" (ionError)="loadDefaultImage($event)" alt="Image - {{ event.name}}"></ion-img>
+<!--              <img id="x" crossorigin="anonymous" src="{{ removeWww(event.image) }}">
+                <img crossorigin="anonymous" [src]="sanitizer.bypassSecurityTrustResourceUrl(img) ">-->
             </ion-thumbnail>
           </ion-col>
           <ion-col size="7" class="event-card__description ion-no-padding">

@@ -6,10 +6,9 @@ import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { EventListCardComponent } from './event-list-card.component';
-import { IonicImageLoader } from 'ionic-image-loader';
 
 @NgModule({
-  imports: [ CommonModule, FormsModule, IonicModule, RouterModule, IonicImageLoader],
+  imports: [ CommonModule, FormsModule, IonicModule, RouterModule],
   declarations: [EventListCardComponent],
   exports: [EventListCardComponent]
 })

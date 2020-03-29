@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Resolve } from '@angular/router';
 
-import { DataService } from '@services/data.service';
+import { Plugins } from '@capacitor/core';
+
+const { Storage } = Plugins;
 
 @Injectable({
   providedIn: 'root'
 })
-export class ArchivalEventsResolver implements Resolve<any> {
+export class FavouritesResolver implements Resolve<any> {
   private refreshFlag: boolean = true;
+  private readonly STORAGE_KEY: string = 'favoriteEvents';
 
-  constructor(private dataService: DataService) {}
+  constructor() {}
 
   public resolve(): any {
-    const events = this.dataService.getEvents(new Date().getFullYear().toString(), this.refreshFlag);
-    this.refreshFlag ? this.refreshFlag = false : '';
-
-    return events;
+    return Storage.get({key: this.STORAGE_KEY}).then((s) => JSON.parse(s.value));
   }
 }

@@ -70,7 +70,7 @@ export class FiltersService {
           )
         )
         && (event.name.toLowerCase().indexOf(this.searchingTerm.toLowerCase()) > -1)
-        && (!this.favouritesService.getFavouritesOnlyFlag() || this.favouritesService.isFavourite(event.id))
+        /*&& (!this.favouritesService.getFavouritesOnlyFlag() || this.favouritesService.isFavourite(event.id))*/
     );
   }
 }
