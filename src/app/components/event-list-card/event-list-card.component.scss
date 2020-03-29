@@ -1,6 +1,7 @@
 .event-card {
   display: flex;
   min-height: 126px;
+  position: relative;
 
   &__fav {
     position: absolute;

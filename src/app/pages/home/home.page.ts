@@ -22,15 +22,13 @@ export class HomePage implements OnInit {
 
   public ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events;
-    console.log('home: ', this.events);
 
     Network.addListener('networkStatusChange', (status) => {
       if(status.connected) {
-        this.dataService.getEvents(this.filtersService.getDate())
-          .subscribe((events: Array<Event>) => {
-            this.filtersService.filterEvents(events);
-            this.filtersService.setFilteredEvents(this.filtersService.filteredEvents);
-          });
+        this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
+          this.events = events;
+          console.log('online')
+        });
       }
     })
   }
@@ -40,10 +38,14 @@ export class HomePage implements OnInit {
     const ionSelects: NodeListOf<HTMLIonSelectElement> = document.querySelectorAll('ion-select');
     ionSelects.forEach((select: HTMLIonSelectElement) => {
       select.shadowRoot.querySelectorAll('.select-icon')
-          .forEach((element: HTMLElement) => {
-            element.setAttribute('style', 'display: none');
-          });
+        .forEach((element: HTMLElement) => {
+          element.setAttribute('style', 'display: none');
+        });
     });
+  }
+
+  public trackByFn(index, item) {
+    return item.id;
   }
 
   public eventsFiltered(event) {
@@ -65,7 +67,7 @@ export class HomePage implements OnInit {
         date_end: "2020-07-01",
         event_type: "Fantastyka",
         image: "https://www.konwenty-poludniowe.pl/images/joodb/db1/img1107.jpg",
-        location: "Szczecin"
+        location: "Brzeg"
         }];
       console.log(this.events); ev.detail.complete();});
   }*/

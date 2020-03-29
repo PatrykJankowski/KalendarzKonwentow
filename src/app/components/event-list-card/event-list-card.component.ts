@@ -180,7 +180,7 @@ console.log(dataURL)
     event.target.src = '/assets/no-image.jpg';
   }
 
-  public removeWww(url) {
+  public removeWww(url) {console.log('sadsdasd asd asd s')
     return url.replace("/www.", "/");
   }
 }

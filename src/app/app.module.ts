@@ -23,12 +23,15 @@ registerLocaleData(localePl);
     IonicModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,
-    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('/ngsw-worker.js', {enabled: environment.production})
   ],
   providers: [
     Calendar,
-    { provide: LOCALE_ID, useValue: 'pl' },
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    {provide: LOCALE_ID, useValue: 'pl'},
+    {provide: RouteReuseStrategy, useClass: IonicRouteStrategy}
+  ],
+  exports: [
+
   ],
   bootstrap: [AppComponent]
 })

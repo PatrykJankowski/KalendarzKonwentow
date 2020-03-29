@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { Plugins } from '@capacitor/core';
@@ -14,7 +14,7 @@ const { Storage } = Plugins;
   providedIn: 'root'
 })
 export class DataService {
-  private readonly API_URL: string = 'https://softcraft.it/api.php';
+  private readonly API_URL: string = 'https://konwenty-poludniowe.pl/api.php';
   private readonly API_STORAGE_KEY: string = 'KK';
   public responseCache = new Map();
 

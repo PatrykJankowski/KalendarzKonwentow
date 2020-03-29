@@ -6,10 +6,11 @@ import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { EventListCardComponent } from './event-list-card.component';
+import { RemoveWwwPipe } from '../../removeWww.pipe';
 
 @NgModule({
   imports: [ CommonModule, FormsModule, IonicModule, RouterModule],
-  declarations: [EventListCardComponent],
+  declarations: [EventListCardComponent, RemoveWwwPipe],
   exports: [EventListCardComponent]
 })
 export class EventListCardComponentModule {}

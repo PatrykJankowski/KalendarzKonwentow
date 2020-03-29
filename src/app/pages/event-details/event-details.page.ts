@@ -34,7 +34,6 @@ export class EventDetailsPage {
     return url.replace("/www.", "/");
   }
 
-
   public addToCalendar(): void {
     this.calendar.createEventInteractively(
         this.eventDetails.name, this.eventDetails.location, this.eventDetails.description,
@@ -47,19 +46,11 @@ export class EventDetailsPage {
   }
 
   public addToFavourites(event: Event): void {
-    this.favouritesService.addToFavorites(event).then(() => {
-
-        //this.filtersService.filterEvents(this.filtersService.filteredEvents)
-
-    });
+    this.favouritesService.addToFavorites(event).then();
   }
 
   public removeFromFavourites(event: Event): void {
-    this.favouritesService.removeFromFavourites(event).then(() => {
-
-        //this.filtersService.filterEvents(this.filtersService.filteredEvents)
-
-    });
+    this.favouritesService.removeFromFavourites(event).then();
   }
 
   public isFavourite(id: number) {

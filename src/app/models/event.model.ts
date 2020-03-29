@@ -6,6 +6,8 @@ export interface Event {
     image: string;
     date_begin: string;
     date_end: string;
+    lat: string;
+    long: string;
 }
 
 export interface EventDetails extends Event {

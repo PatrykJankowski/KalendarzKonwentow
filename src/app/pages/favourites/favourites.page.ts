@@ -1,11 +1,10 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DataService } from '@services/data.service';
 import { ActivatedRoute } from '@angular/router';
 import { FavouriteService } from '@services/favourites.service';
 import { FiltersService } from '@services/filters.service';
 import { Network } from '@capacitor/core';
 import { Event } from '@models/event.model';
-
 
 @Component({
   selector: 'app-favourites',
@@ -14,35 +13,40 @@ import { Event } from '@models/event.model';
 })
 export class FavouritesPage implements OnInit {
   @Output() eventsChange = new EventEmitter();
+  @Input() filteredEvents: Array<Event> = [];
 
-  public events;
-
+  public events: Array<Event> = [];
 
   constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private filtersService: FiltersService) {}
 
   public ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events;
 
-
-    this.favouritesService.favouritesChange.subscribe(value => {console.log('change: ', value)});
-
-    //this.favouritesService.getFavoritesEvents().then((k) => console.log(k.valueOf()));
+    this.favouritesService.favouritesChange.subscribe(events => {
+      this.filteredEvents = events
+    });
 
     Network.addListener('networkStatusChange', (status) => {
       if(status.connected) {
-        this.dataService.getEvents(this.filtersService.getDate())
-          .subscribe((events: Array<Event>) => {
-            this.filtersService.filterEvents(events);
-            this.filtersService.setFilteredEvents(this.filtersService.filteredEvents);
-          });
+        this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
+          this.events = events;
+          console.log('online');
+        });
       }
-    });
+    })
   }
 
   ngOnChanges() {
     this.events = this.activatedRoute.snapshot.data.events;
     this.eventsChange.emit(this.events);
+  }
 
+  public trackByFn(index, item) {
+    return item.id;
+  }
+
+  public eventsFiltered(event) {
+    this.filteredEvents = event;
   }
 
   public ionViewWillEnter(): void {
@@ -56,10 +60,7 @@ export class FavouritesPage implements OnInit {
     });
   }
 
-
   public loadDefaultImage(event): void {
     event.target.src = '/assets/no-image.jpg';
   }
-
-
 }

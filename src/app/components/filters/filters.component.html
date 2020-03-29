@@ -35,6 +35,24 @@
         </ion-item>
       </ion-col>
 
+      <ion-col *ngIf="inRange" size="3">
+        <ion-item lines="none" class="ion-no-padding">
+          <div class="filter">
+            <ion-label class="filter__label">W pobliżu:</ion-label>
+            <ion-select class="filter__option" ok-text="Potwierdź" cancel-text="Anuluj" [formControl]="rangeFilter">
+              <ion-select-option value="" selected>Wszystkie</ion-select-option>
+              <ion-select-option value=50>50 km</ion-select-option>
+              <ion-select-option value=100>100 km</ion-select-option>
+            </ion-select>
+            <div class="filter__dots">
+              <span class="filter__dot"></span>
+              <span class="filter__dot"></span>
+              <span class="filter__dot"></span>
+            </div>
+          </div>
+        </ion-item>
+      </ion-col>
+
       <ion-col *ngIf="enableDate" size="3">
         <ion-item lines="none" class="ion-no-padding">
           <div class="filter">

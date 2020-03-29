@@ -22,7 +22,6 @@ export class ArchivalEventsPage implements OnInit {
 
   public ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events;
-    console.log('archivalEvents: ', this.events);
 
     Network.addListener('networkStatusChange', (status) => {
       if(status.connected) {
@@ -44,6 +43,10 @@ export class ArchivalEventsPage implements OnInit {
           element.setAttribute('style', 'display: none');
         });
     });
+  }
+
+  public trackByFn(index, item) {
+    return item.id;
   }
 
   public eventsFiltered(event) {
