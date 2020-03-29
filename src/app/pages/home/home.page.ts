@@ -49,6 +49,7 @@ export class HomePage implements OnInit {
   }
 
   public eventsFiltered(event) {
+    console.log('1111111111111111111')
     this.filteredEvents = event;
   }
 

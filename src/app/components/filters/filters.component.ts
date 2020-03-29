@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
 import { Event } from '@models/event.model';
@@ -80,8 +80,11 @@ export class FiltersComponent implements OnInit {
       !range ? range = 9999999 : '';
       this.setRange(range);
 
-      this.getLocation().then(() => this.setFilteredEvents()).catch(() => this.setFilteredEvents());
-
+      if (range < 9999999) { // jesli nie wszystkie
+        this.getLocation().then(() => this.setFilteredEvents()).catch(() => this.setFilteredEvents());
+      } else {
+        this.setFilteredEvents()
+      }
     });
 
     this.dateFilter.valueChanges.subscribe((date: string) => {
@@ -126,12 +129,13 @@ export class FiltersComponent implements OnInit {
   }
 
 
-  ngOnChanges() {
-    this.originalEvents = this.events;
-
-    if (this.enableDate && !this.date || !this.enableDate) {
-      this.initFilters();
-      this.filterEvents(this.events)
+  ngOnChanges(changes: SimpleChanges) {
+    if(!changes["events"].isFirstChange()) {
+      this.originalEvents = this.events;
+      if (this.enableDate && !this.date || !this.enableDate) {
+        this.initFilters();
+        this.filterEvents(this.events)
+      }
     }
   }
 
