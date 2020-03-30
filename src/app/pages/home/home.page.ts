@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { Network } from '@capacitor/core';
@@ -6,22 +6,26 @@ import { Network } from '@capacitor/core';
 import { Event } from '@models/event.model';
 import { DataService } from '@services/data.service';
 import { FavouriteService } from '@services/favourites.service';
-import { FiltersService } from '@services/filters.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomePage implements OnInit {
   @Input() filteredEvents: Array<Event> = [];
 
   public events: Array<Event> = [];
 
-  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private filtersService: FiltersService) {}
+  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private changeDetectorRef: ChangeDetectorRef) {}
 
   public ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events;
+
+    this.favouritesService.favouritesChange.subscribe(events => {
+      this.changeDetectorRef.markForCheck();
+    });
 
     Network.addListener('networkStatusChange', (status) => {
       if(status.connected) {
@@ -31,39 +35,6 @@ export class HomePage implements OnInit {
         });
       }
     })
-
-
-
-
-/*    // !!!!!!!!!!!!! WORKING!!!!!!!!!
-    var elephant = document.getElementsByClassName("header__logo")[0] as HTMLImageElement;
-
-// Take action when the image has loaded
-    elephant.addEventListener("load", function () {
-      var imgCanvas = document.createElement("canvas"),
-          imgContext = imgCanvas.getContext("2d");
-      console.log(elephant)
-      // Make sure canvas is as big as the picture
-      imgCanvas.width = elephant.width;
-      imgCanvas.height = elephant.height;
-      console.log(imgCanvas)
-      // Draw image into canvas element
-      imgContext.drawImage(elephant, 0, 0, elephant.width, elephant.height);
-      console.log(imgContext)
-      // Get canvas contents as a data URL
-      var imgAsDataURL = imgCanvas.toDataURL("image/png");
-      console.log(imgAsDataURL)
-      // Save image into localStorage
-      try {
-        localStorage.setItem("elephant", imgAsDataURL);
-      }
-      catch (e) {
-        console.log("Storage failed: " + e);
-      }
-    }, false);
-    */
-
-
   }
 
   public ionViewWillEnter(): void {
@@ -75,6 +46,9 @@ export class HomePage implements OnInit {
           element.setAttribute('style', 'display: none');
         });
     });
+
+    this.changeDetectorRef.markForCheck();
+    this.changeDetectorRef.detectChanges();
   }
 
   public trackByFn(index, item) {
@@ -82,7 +56,6 @@ export class HomePage implements OnInit {
   }
 
   public eventsFiltered(event) {
-    console.log('1111111111111111111')
     this.filteredEvents = event;
   }
 

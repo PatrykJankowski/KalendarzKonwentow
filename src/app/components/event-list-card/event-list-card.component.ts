@@ -1,7 +1,18 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+
+import { Plugins } from '@capacitor/core';
+
 import { Event } from '@models/event.model';
 import { FavouriteService } from '@services/favourites.service';
-import { Plugins } from '@capacitor/core';
 
 const { Storage } = Plugins;
 
@@ -9,59 +20,86 @@ const { Storage } = Plugins;
   selector: 'app-event-list-card',
   templateUrl: './event-list-card.component.html',
   styleUrls: ['./event-list-card.component.scss'],
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EventListCardComponent {
-  @Input() event: Event;
+export class EventListCardComponent implements OnChanges {
   @ViewChild('imageReference') input;
-  public img: string = '';
+  @Input() event: Event;
 
-  constructor(public favouritesService: FavouriteService) {}
+  public img = '';
 
+  constructor(public favouritesService: FavouriteService, private changeDetectorRef: ChangeDetectorRef, public sanitizer: DomSanitizer) {
+    this.changeDetectorRef.markForCheck();
+  }
 
-  ngOnChanges() {
-    Storage.get({key: 'img' + this.event.id}).then((image) => {
-      if (image.value) {
-        this.img = image.value;
-      } else {
-        let imageElement = this.input.nativeElement;
-        let id = this.event.id;
-        let image = this.event.image;
+  ngOnChanges(changes: SimpleChanges) {
+      Storage.get({key: 'img' + this.event.id}).then((image) => {
+        if (image.value) {
+          this.img = image.value;
+          this.changeDetectorRef.markForCheck();
+        } else {
 
-        this.img = this.event.image;
-        console.log('1', imageElement);
+          const id = this.event.id;
+          this.img = this.event.image;
 
-        // Take action when the image has loaded
-        imageElement.addEventListener("load", function handler() {
+          const toDataURL = url => fetch(url)
+              .then(response => response.blob())
+              .then(blob => new Promise((resolve, reject) => {
 
-          imageElement.removeEventListener('load', handler);
+               if (blob.type === 'text/html') {
+                   this.img = '/assets/no-image.jpg';
+                   resolve('/assets/no-image.jpg');
+               } else {
+                   const reader = new FileReader();
+                   reader.onloadend = () => resolve(reader.result);
+                   reader.onerror = reject;
+                   reader.readAsDataURL(blob)
+               }
 
-          fetch(image).then((response) => {
-            if (response.status == 200) {
-              let imgCanvas = document.createElement("canvas");
-              let imgContext = imgCanvas.getContext("2d");
+              }));
 
-              // Make sure canvas is as big as the picture
-              imgCanvas.width = imageElement.width;
-              imgCanvas.height = imageElement.height;
+          toDataURL(this.event.image)
+              .then((dataUrl: string) => {
+                console.log('RESULT:', dataUrl);
+                Storage.set({key: 'img'+id, value: dataUrl});
+              });
 
-              // Draw image into canvas element
-              imgContext.drawImage(imageElement, 0, 0, imageElement.width, imageElement.height);
+         /* const imageElement = this.input.nativeElement;
+          const id = this.event.id;
+          const imageUrl = this.event.image;
 
-              // Get canvas contents as a data URL
-              let imgAsDataURL = imgCanvas.toDataURL("image/png");
+          this.img = this.event.image;
 
-              // Save image into localStorage
-              try {
+          // Take action when the image has loaded
+          imageElement.addEventListener('load', function handler() {
+
+            imageElement.removeEventListener('load', handler);
+
+            fetch(imageUrl).then((response) => {
+              if (response.status === 200) {
+                const imgCanvas = document.createElement('canvas');
+                const imgContext = imgCanvas.getContext('2d');
+
+                // Make sure canvas is as big as the picture
+                imgCanvas.width = imageElement.width;
+                imgCanvas.height = imageElement.height;
+
+                // Draw image into canvas element
+                imgContext.drawImage(imageElement, 0, 0, imageElement.width, imageElement.height);
+
+                // Get canvas contents as a data URL
+                const imgAsDataURL = imgCanvas.toDataURL('image/png');
+
+                // Save image into localStorage
                 Storage.set({key: 'img'+id, value: imgAsDataURL});
-              } catch(err) {
-                return err;
+              } else {
+                Storage.set({key: 'img'+id, value: '/assets/no-image.jpg'});
               }
-            }
-          });
-        }, false);
-
-      }
-    });
+            });
+          }, false);*/
+          this.changeDetectorRef.markForCheck();
+        }
+      });
   }
 
   public addToFavourites(event: Event): void {

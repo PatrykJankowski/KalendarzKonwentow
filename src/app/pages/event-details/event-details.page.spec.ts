@@ -1,9 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 
-import { EventDetailsPage } from './event-details.page';
+import { IonicModule } from '@ionic/angular';
+
 import { EventDetailsPageRoutingModule } from './event-details-routing.module';
+import { EventDetailsPage } from './event-details.page';
 
 describe('ViewMessagePage', () => {
   let component: EventDetailsPage;

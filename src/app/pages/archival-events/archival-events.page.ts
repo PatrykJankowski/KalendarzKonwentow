@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { Network } from '@capacitor/core';
@@ -12,6 +12,7 @@ import { FiltersService } from '@services/filters.service';
   selector: 'app-archival-events',
   templateUrl: './archival-events.page.html',
   styleUrls: ['./archival-events.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ArchivalEventsPage implements OnInit {
   @Input() filteredEvents: Array<Event> = [];

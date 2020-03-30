@@ -12,8 +12,9 @@ export class HomeResolver implements Resolve<any> {
   constructor(private dataService: DataService) {}
 
   public resolve(): any {
+    console.log("resolver");
     const events = this.dataService.getEvents('', this.refreshFlag);
-   this.refreshFlag ? this.refreshFlag = false : '';
+    this.refreshFlag ? this.refreshFlag = false : '';
 
     return events;
   }

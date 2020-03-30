@@ -73,7 +73,7 @@
 
     <ion-row>
       <ion-col>
-        <ion-searchbar placeholder="Szukaj..." class="searchbar" [formControl]="searchField"></ion-searchbar>
+        <ion-searchbar class="searchbar" placeholder="Szukaj..." debounce="200" [formControl]="searchField"></ion-searchbar>
       </ion-col>
     </ion-row>
 

@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Event } from '@models/event.model';
+
 import { Plugins } from '@capacitor/core';
 import { Subject } from 'rxjs';
+
+import { Event } from '@models/event.model';
 
 const { Storage } = Plugins;
 

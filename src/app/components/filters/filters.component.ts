@@ -1,26 +1,28 @@
 import { formatDate } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
+
+import { LoadingController } from '@ionic/angular';
+
+import { Geolocation, Toast } from '@capacitor/core';
 
 import { Event } from '@models/event.model';
 import { DataService } from '@services/data.service';
 import { FavouriteService } from '@services/favourites.service';
 import { FiltersService } from '@services/filters.service';
 
-import { Geolocation} from '@capacitor/core';
-
 @Component({
   selector: 'app-filters',
   templateUrl: './filters.component.html',
   styleUrls: ['./filters.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FiltersComponent implements OnInit {
+export class FiltersComponent implements OnInit, OnChanges {
+  @Input() enableDate = false;
+  @Input() fav = false;
+  @Input() inRange = false;
   @Input() events: Array<Event>;
   @Output() eventsFiltered = new EventEmitter();
-
-  @Input() enableDate: boolean = false;
-  @Input() fav: boolean = false;
-  @Input() inRange: boolean = false;
 
   public originalEvents: Array<Event>;
 
@@ -45,16 +47,19 @@ export class FiltersComponent implements OnInit {
 
   public maxDate: number = new Date().getFullYear();
 
-  constructor(private filtersService: FiltersService, private dataService: DataService, private favouritesService: FavouriteService) {
+  isLoading = false;
+
+  constructor(private filtersService: FiltersService, private dataService: DataService, private favouritesService: FavouriteService, public loadingController: LoadingController, private changeDetectorRef: ChangeDetectorRef) {
     this.getLocation();
   }
 
-  ngOnInit() {
+  public ngOnInit() {
     this.originalEvents = this.events;
 
     this.favouritesService.favouritesChange.subscribe(value => {
       this.originalEvents = value;
-      this.initFilters()
+      this.initFilters();
+      this.changeDetectorRef.markForCheck();
     });
 
     this.filterEvents(this.originalEvents);
@@ -68,22 +73,33 @@ export class FiltersComponent implements OnInit {
 
     this.categoryFilter.valueChanges.subscribe((category: string) => {
       this.setCategory(category);
-      this.setFilteredEvents();
+      this.filterEvents(this.originalEvents);
     });
 
     this.locationFilter.valueChanges.subscribe((location: string) => {
       this.setLocation(location);
-      this.setFilteredEvents();
+      this.filterEvents(this.originalEvents);
     });
 
     this.rangeFilter.valueChanges.subscribe((range: number) => {
+      this.present();
       !range ? range = 9999999 : '';
       this.setRange(range);
 
       if (range < 9999999) { // jesli nie wszystkie
-        this.getLocation().then(() => this.setFilteredEvents()).catch(() => this.setFilteredEvents());
+        this.getLocation().then(() => {
+          this.filterEvents(this.originalEvents);
+          this.dismiss()
+        }).catch(() => {
+          this.filterEvents(this.originalEvents);
+          this.dismiss();
+          Toast.show({
+            text: 'Włącz GPS i spróbuj ponownie'
+          })
+        });
       } else {
-        this.setFilteredEvents()
+        this.filterEvents(this.originalEvents);
+        this.dismiss()
       }
     });
 
@@ -94,43 +110,20 @@ export class FiltersComponent implements OnInit {
         .subscribe((events: Array<Event>) => {
           this.events = events;
           this.originalEvents = events;
-          this.setFilteredEvents();
+          this.filterEvents(this.originalEvents);
+          this.locations = [];
+          this.initFilters();
         });
     });
 
     this.searchField.valueChanges.subscribe((searchingTerm: string) => {
       this.setSearchingTerm(searchingTerm);
-      this.setFilteredEvents();
+      this.filterEvents(this.originalEvents);
     });
   }
 
-
-
-  public distance(lat1, lon1, lat2, lon2, unit) {
-    var radlat1 = Math.PI * lat1/180
-    var radlat2 = Math.PI * lat2/180
-    var radlon1 = Math.PI * lon1/180
-    var radlon2 = Math.PI * lon2/180
-    var theta = lon1-lon2
-    var radtheta = Math.PI * theta/180
-    var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-    dist = Math.acos(dist)
-    dist = dist * 180/Math.PI
-    dist = dist * 60 * 1.1515
-    if (unit=="K") { dist = dist * 1.609344 }
-    if (unit=="N") { dist = dist * 0.8684 }
-    return dist
-  }
-
-  public async getLocation() {
-    const position = await Geolocation.getCurrentPosition();
-    this.lat = position.coords.latitude;
-    this.long = position.coords.longitude;
-  }
-
-
-  ngOnChanges(changes: SimpleChanges) {
-    if(!changes["events"].isFirstChange()) {
+  public ngOnChanges(changes: SimpleChanges) {
+    if(!changes.events.isFirstChange()) {
       this.originalEvents = this.events;
       if (this.enableDate && !this.date || !this.enableDate) {
         this.initFilters();
@@ -139,12 +132,34 @@ export class FiltersComponent implements OnInit {
     }
   }
 
-  private initFilters(): void {
-    //this.categories = [];
-    //this.locations = [];
+  async present() {
+    this.isLoading = true;
+    return await this.loadingController.create({
+      // message: 'Wyszukiwanie wydarzeń w pobliżu...',
+    }).then(a => {
+      a.present().then(() => {
+        if (!this.isLoading) {
+          a.dismiss().then();
+        }
+      });
+    });
+  }
 
-    if (this.originalEvents) {
-      for (const event of this.originalEvents) { // todo: lista kategori, miast itp. z api
+  async dismiss() {
+    this.isLoading = false;
+    return await this.loadingController.dismiss().then();
+  }
+
+  private initFilters(): void {
+    let originalEvents = this.originalEvents;
+
+    if (this.enableDate && !this.date) {
+      const todayDate: Date = new Date();
+      originalEvents = originalEvents.filter((event: Event) => new Date(event.date_end) <= new Date(todayDate));
+    }
+
+    if (originalEvents) {
+      for (const event of originalEvents) { // todo: lista kategori, miast itp. z api
         const category: string = event.event_type;
         const location: string = event.location;
         const year: number = parseInt(formatDate(event.date_end, 'yyyy', 'pl'), 10);
@@ -164,6 +179,71 @@ export class FiltersComponent implements OnInit {
       this.categories.sort();
       this.locations.sort();
     }
+  }
+
+  public filterEvents(events: Array<Event>): Array<Event> {
+    if (events === null) {
+      return [];
+    }
+
+    const todayDate: Date = new Date();
+    const date = this.date ? this.date + '-12-31' : todayDate;
+    let futureEvents = false;
+
+    if (!this.date && !this.enableDate) {
+      futureEvents = true;
+    }
+
+    const filteredEvents = events.filter((event: Event) => (
+      this.filterByCategory(event) &&
+      this.filterByLocation(event) &&
+        (
+          (futureEvents && new Date(event.date_end) >= todayDate) ||
+          (!futureEvents && !this.fav && new Date(event.date_end) <= new Date(date)) ||
+          (this.fav)
+        )
+      )
+      && this.filterBySearchingTerm(event)
+      && this.filterByDistance(event)
+    );
+
+    this.eventsFiltered.emit(filteredEvents);
+  }
+
+  public calculateDistance(lat1, lon1, lat2, lon2) {
+    const radlat1 = Math.PI * lat1/180;
+    const radlat2 = Math.PI * lat2/180;
+    const theta = lon1-lon2;
+    const radtheta = Math.PI * theta/180;
+    let dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    dist = Math.acos(dist);
+    dist = dist * 180/Math.PI;
+    dist = dist * 60 * 1.1515;
+
+    return dist * 1.609344
+  }
+
+  public async getLocation() {
+    const position = await Geolocation.getCurrentPosition();
+    this.lat = position.coords.latitude;
+    this.long = position.coords.longitude;
+  }
+
+  private filterByLocation(event): boolean {
+    return event.location.indexOf(this.location) > -1;
+  }
+
+  private filterByCategory(event): boolean {
+    return event.event_type.indexOf(this.category) > -1;
+  }
+
+  private filterBySearchingTerm(event): boolean {
+    return event.name.toLowerCase().indexOf(this.searchingTerm.toLowerCase()) > -1;
+  }
+
+  private filterByDistance(event): boolean {
+    return (!this.lat || !this.lat) ||
+           (this.calculateDistance(this.lat, this.long, event.lat, event.long) <= this.range);
   }
 
   public getCategories() {
@@ -188,38 +268,5 @@ export class FiltersComponent implements OnInit {
 
   public setSearchingTerm(searchingTerm: string): void {
     this.searchingTerm = searchingTerm;
-  }
-
-  public setFilteredEvents(): void {
-    this.filterEvents(this.originalEvents);
-  }
-
-  public filterEvents(events: Array<Event>, fav = false): Array<Event> {
-    if (events === null) {
-      return [];
-    }
-
-    const todayDate: Date = new Date();
-    let date = this.date ? this.date + '-12-31' : this.maxDate + '-12-31';
-    let futureEvents = false;
-
-    if (!this.date && !this.enableDate) {
-      futureEvents = true;
-    }
-
-    let filteredEvents = events.filter((event: Event) => (
-      event.event_type.indexOf(this.category) > -1 &&
-      event.location.indexOf(this.location) > -1 &&
-        (
-          (futureEvents && new Date(event.date_end) >= todayDate) ||
-          (!futureEvents && !this.fav && new Date(event.date_end) <= new Date(date)) ||
-          (this.fav)
-        )
-      )
-      && (event.name.toLowerCase().indexOf(this.searchingTerm.toLowerCase()) > -1)
-      && ((!this.lat || !this.lat) || (this.distance(this.lat, this.long, event.lat, event.long, "K") <= this.range))
-    );
-
-    this.eventsFiltered.emit(filteredEvents);
   }
 }

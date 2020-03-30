@@ -9,9 +9,9 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { Calendar } from '@ionic-native/calendar/ngx';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { environment } from '../environments/environment';
 
 registerLocaleData(localePl);
 

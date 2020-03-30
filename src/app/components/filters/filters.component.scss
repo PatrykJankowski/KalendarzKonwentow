@@ -61,10 +61,15 @@
 }
 
 .searchbar {
+    width: calc(100% - 10px);
+    margin: 0 auto;
     padding-inline-start: 0;
     padding-inline-end: 0;
     --background: #F6F5F7;
+    --box-shadow: 0 0 1px 0 rgba(0,0,0,0.75);
 }
+
+
 
 ion-col {
     padding: 0;
@@ -72,13 +77,4 @@ ion-col {
 
 ion-item {
     --inner-padding-end: 0px;
-}
-
-
-
-ion-searchbar {
-    width: calc(100% - 10px);
-    margin: 0 auto;
-    --box-shadow: 0 0 1px 0 rgba(0,0,0,0.75);
-
 }
