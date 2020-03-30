@@ -31,6 +31,39 @@ export class HomePage implements OnInit {
         });
       }
     })
+
+
+
+
+/*    // !!!!!!!!!!!!! WORKING!!!!!!!!!
+    var elephant = document.getElementsByClassName("header__logo")[0] as HTMLImageElement;
+
+// Take action when the image has loaded
+    elephant.addEventListener("load", function () {
+      var imgCanvas = document.createElement("canvas"),
+          imgContext = imgCanvas.getContext("2d");
+      console.log(elephant)
+      // Make sure canvas is as big as the picture
+      imgCanvas.width = elephant.width;
+      imgCanvas.height = elephant.height;
+      console.log(imgCanvas)
+      // Draw image into canvas element
+      imgContext.drawImage(elephant, 0, 0, elephant.width, elephant.height);
+      console.log(imgContext)
+      // Get canvas contents as a data URL
+      var imgAsDataURL = imgCanvas.toDataURL("image/png");
+      console.log(imgAsDataURL)
+      // Save image into localStorage
+      try {
+        localStorage.setItem("elephant", imgAsDataURL);
+      }
+      catch (e) {
+        console.log("Storage failed: " + e);
+      }
+    }, false);
+    */
+
+
   }
 
   public ionViewWillEnter(): void {
