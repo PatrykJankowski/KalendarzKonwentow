@@ -30,16 +30,18 @@ export class DataService {
 
     return this.http.get(`${this.API_URL}?year=${year}`)
       .pipe(
-        tap((event: Event) => {this.setLocalData(`events${year}`, event); this.responseCache.set(URL, event)}),
-        catchError((err) => {
-          console.log(err);
+        tap((event: Event) => {
+          this.setLocalData(`events${year}`, event);
+          this.responseCache.set(URL, event)
+        }),
+        catchError(() => {
           return this.networkService.getCurrentNetworkStatus().then(connectionStatus => {
             if (!connectionStatus) {
-              return this.getLocalData(`events${year}`);
+              return this.getLocalData(`events${year}`).catch(() => []);
             }
           });
         })
-      )
+      );
   }
 
   public getEventDetails(id: number): Observable<EventDetails[]> {

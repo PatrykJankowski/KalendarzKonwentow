@@ -16,4 +16,5 @@ import { EventDetailsPage } from './event-details.page';
   ],
   declarations: [EventDetailsPage]
 })
-export class EventDetailsPageModule {}
+export class EventDetailsPageModule {
+}

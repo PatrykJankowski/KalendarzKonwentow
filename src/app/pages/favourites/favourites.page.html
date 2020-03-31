@@ -2,7 +2,7 @@
   <ion-title class="header__title">
     <img src="assets/logo.png" alt="Konwenty Południowe" class="header__logo">
   </ion-title>
-  <app-filters [events]="favouritesService.favouritesEvents" (eventsFiltered)="eventsFiltered($event)" [fav]="true"></app-filters>
+  <app-filters [events]="favouritesService.favouritesEvents" (eventsFiltered)="eventsFiltered($event)" [enableDate]="false" [inRange]="false" [enableVoivodeship]="false" [fav]="true"></app-filters>
 </ion-header>
 
 <ion-content [fullscreen]="true">

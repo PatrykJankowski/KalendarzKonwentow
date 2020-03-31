@@ -3,6 +3,7 @@ export interface Event {
     name: string;
     event_type: string;
     location: string;
+    voivodeship: string;
     image: string;
     date_begin: string;
     date_end: string;

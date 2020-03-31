@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { Network } from '@capacitor/core';
-
 import { Event } from '@models/event.model';
 import { DataService } from '@services/data.service';
 import { FavouriteService } from '@services/favourites.service';
@@ -26,17 +24,20 @@ export class FavouritesPage implements OnInit, OnChanges {
 
     this.favouritesService.favouritesChange.subscribe(events => {
       this.filteredEvents = events;
-      this.changeDetectorRef.markForCheck();
     });
+  }
 
-    Network.addListener('networkStatusChange', (status) => {
-      if(status.connected) {
-        this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
-          this.events = events;
-          console.log('online');
-        });
-      }
-    })
+  public ionViewWillEnter(): void {
+    setTimeout(() => {
+      // Remove dropdown arrow; hope for better solution in future Ionic version
+      const ionSelects: NodeListOf<HTMLIonSelectElement> = document.querySelectorAll('ion-select');
+      ionSelects.forEach((select: HTMLIonSelectElement) => {
+        select.shadowRoot.querySelectorAll('.select-icon')
+          .forEach((element: HTMLElement) => {
+            element.setAttribute('style', 'display: none');
+          });
+      });
+    }, 0);
   }
 
   public ngOnChanges() {
@@ -52,15 +53,8 @@ export class FavouritesPage implements OnInit, OnChanges {
     this.filteredEvents = event;
   }
 
-  public ionViewWillEnter(): void {
-    // Remove dropdown arrow; hope for better solution in future Ionic version
-    const ionSelects: NodeListOf<HTMLIonSelectElement> = document.querySelectorAll('ion-select');
-    ionSelects.forEach((select: HTMLIonSelectElement) => {
-      select.shadowRoot.querySelectorAll('.select-icon')
-        .forEach((element: HTMLElement) => {
-          element.setAttribute('style', 'display: none');
-        });
-    });
+  public ionViewDidEnter(): void {
+    this.changeDetectorRef.markForCheck();
   }
 
   public loadDefaultImage(event): void {

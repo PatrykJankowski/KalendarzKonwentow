@@ -1,13 +1,13 @@
 <ion-toolbar class="toolbar">
   <ion-grid>
     <ion-row>
-      <ion-col size="3">
+      <ion-col size="{{ columns }}">
         <ion-item lines="none" class="ion-no-padding">
           <div class="filter">
             <ion-label class="filter__label">Kategoria:</ion-label>
             <ion-select class="filter__option" ok-text="Potwierdź" cancel-text="Anuluj" [formControl]="categoryFilter">
               <ion-select-option value="" selected>Wszystkie</ion-select-option>
-              <ion-select-option *ngFor="let category of getCategories()" value="{{ category }}">{{ category }}</ion-select-option>
+              <ion-select-option *ngFor="let category of categories" value="{{ category }}">{{ category }}</ion-select-option>
             </ion-select>
             <div class="filter__dots">
               <span class="filter__dot"></span>
@@ -18,7 +18,24 @@
         </ion-item>
       </ion-col>
 
-      <ion-col size="3">
+      <ion-col *ngIf="enableVoivodeship" size="{{ columns }}">
+        <ion-item lines="none" class="ion-no-padding">
+          <div class="filter">
+            <ion-label class="filter__label">Województwo:</ion-label>
+            <ion-select class="filter__option" ok-text="Potwierdź" cancel-text="Anuluj" [formControl]="voivodeshipFilter">
+              <ion-select-option value="" selected>Wszystkie</ion-select-option>
+              <ion-select-option *ngFor="let voivodeship of voivodeships" value="{{ voivodeship }}">{{ voivodeship }}</ion-select-option>
+            </ion-select>
+            <div class="filter__dots">
+              <span class="filter__dot"></span>
+              <span class="filter__dot"></span>
+              <span class="filter__dot"></span>
+            </div>
+          </div>
+        </ion-item>
+      </ion-col>
+
+      <ion-col size="{{ columns }}">
         <ion-item lines="none" class="ion-no-padding">
           <div class="filter">
             <ion-label class="filter__label">Miasto:</ion-label>
@@ -35,7 +52,7 @@
         </ion-item>
       </ion-col>
 
-      <ion-col *ngIf="inRange" size="3">
+      <ion-col *ngIf="inRange" size="{{ columns }}">
         <ion-item lines="none" class="ion-no-padding">
           <div class="filter">
             <ion-label class="filter__label">W pobliżu:</ion-label>
@@ -53,7 +70,7 @@
         </ion-item>
       </ion-col>
 
-      <ion-col *ngIf="enableDate" size="3">
+      <ion-col *ngIf="enableDate" size="{{ columns }}">
         <ion-item lines="none" class="ion-no-padding">
           <div class="filter">
             <ion-label class="filter__label">Data:</ion-label>
@@ -71,11 +88,11 @@
       </ion-col>
     </ion-row>
 
-    <ion-row>
+    <!--<ion-row>
       <ion-col>
         <ion-searchbar class="searchbar" placeholder="Szukaj..." debounce="200" [formControl]="searchField"></ion-searchbar>
       </ion-col>
-    </ion-row>
+    </ion-row>-->
 
   </ion-grid>
 </ion-toolbar>
