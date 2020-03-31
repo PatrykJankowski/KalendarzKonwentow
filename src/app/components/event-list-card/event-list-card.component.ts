@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { Plugins } from '@capacitor/core';
@@ -6,7 +6,7 @@ import { Plugins } from '@capacitor/core';
 import { Event } from '@models/event.model';
 import { FavouriteService } from '@services/favourites.service';
 
-const { Storage } = Plugins;
+const {Storage} = Plugins;
 
 @Component({
   selector: 'app-event-list-card',
@@ -28,24 +28,22 @@ export class EventListCardComponent implements OnChanges {
         this.changeDetectorRef.markForCheck();
       } else {
         const toDataURL = url => fetch(url)
-          .then(response => {
-            return response.blob();
-          })
+          .then(response => response.blob())
           .then(blob => new Promise((resolve, reject) => {
             if (blob.type === 'text/html') {
-              // this.event.image = '/assets/no-image.jpg';
-              resolve('/assets/no-image.jpg');
+              // this.event.image = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+              resolve('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
             } else {
               const reader = new FileReader();
               reader.onloadend = () => resolve(reader.result);
               reader.onerror = reject;
               reader.readAsDataURL(blob);
             }
-          })).catch((e) => console.log(e, 'as'));
+          }));
 
         toDataURL(this.event.image).then((dataUrl: string) => {
           Storage.set({key: 'img' + this.event.id, value: dataUrl});
-        }).catch();
+        });
 
         this.changeDetectorRef.markForCheck();
       }

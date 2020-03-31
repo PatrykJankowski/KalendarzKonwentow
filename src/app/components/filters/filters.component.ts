@@ -84,7 +84,7 @@ export class FiltersComponent implements OnInit, OnChanges {
     });
 
     this.filterEvents(this.originalEvents);
-    this.initFilters(); console.log('init')
+    this.initFilters();
 
     this.categoryFilter = new FormControl();
     this.voivodeshipFilter = new FormControl();
@@ -117,7 +117,7 @@ export class FiltersComponent implements OnInit, OnChanges {
             this.filterEvents(this.originalEvents);
             this.dismiss();
           }).catch(() => {
-            this.filterEvents(this.originalEvents);
+            // this.filterEvents(this.originalEvents);
             this.dismiss();
             /*Toast.show({
               text: 'Włącz GPS i spróbuj ponownie'
@@ -149,7 +149,7 @@ export class FiltersComponent implements OnInit, OnChanges {
     });
   }
 
-  public ngOnChanges(changes: SimpleChanges) { console.log(changes)
+  public ngOnChanges(changes: SimpleChanges) {
     if (!changes.events.isFirstChange()) {
       this.originalEvents = this.events;
       if (this.enableDate && !this.date || !this.enableDate) {
@@ -223,7 +223,7 @@ export class FiltersComponent implements OnInit, OnChanges {
     if (events === null) {
       return [];
     }
-    console.log('1', events);
+
     const todayDate: Date = new Date();
     const date = this.date ? this.date + '-12-31' : todayDate;
     let futureEvents = false;
@@ -245,7 +245,7 @@ export class FiltersComponent implements OnInit, OnChanges {
       && this.filterBySearchingTerm(event)
       && this.filterByDistance(event)
     );
-    console.log('3', filteredEvents);
+
     this.eventsFiltered.emit(filteredEvents);
   }
 

@@ -37,7 +37,6 @@ export class HomePage implements OnInit {
         this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
           Storage.clear().then(() => {
             this.events = events;
-            console.log('online', this.events);
             this.changeDetectorRef.markForCheck();
           });
         });
