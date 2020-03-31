@@ -20,13 +20,12 @@ import { Event } from '@models/event.model';
 import { DataService } from '@services/data.service';
 import { FavouriteService } from '@services/favourites.service';
 import { FiltersService } from '@services/filters.service';
-import { log } from 'util';
 
 @Component({
   selector: 'app-filters',
   templateUrl: './filters.component.html',
   styleUrls: ['./filters.component.scss'],
-  // changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FiltersComponent implements OnInit, OnChanges {
   @Input() enableDate = false;

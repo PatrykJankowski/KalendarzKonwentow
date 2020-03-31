@@ -1,8 +1,0 @@
-{
-  "appId": "io.konwenty.kalendarz",
-  "appName": "Kalendarz konwentów",
-  "bundledWebRuntime": false,
-  "npmClient": "npm",
-  "webDir": "www",
-  "cordova": {}
-}

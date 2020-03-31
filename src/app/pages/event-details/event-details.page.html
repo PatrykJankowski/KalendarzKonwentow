@@ -17,7 +17,7 @@
         <ion-row class="ion-align-items-center">
           <ion-thumbnail class="event-details__thumb">
             <!--<ion-img [src]="img" (ionError)="loadDefaultImage($event)" alt="Obrazek - {{ eventDetails ? eventDetails.name : 'brak'}}"></ion-img>-->
-            <img [src]="sanitizer.bypassSecurityTrustResourceUrl(image)" onerror="this.src='/assets/no-image.jpg'" alt="Obrazek - {{ eventDetails ? eventDetails.name : 'brak'}}">
+            <img class="event-details__image" [src]="sanitizer.bypassSecurityTrustResourceUrl(image)" onerror="this.src='/assets/no-image.jpg'" alt="Obrazek - {{ eventDetails ? eventDetails.name : 'brak'}}">
           </ion-thumbnail>
         </ion-row>
       </ion-grid>
