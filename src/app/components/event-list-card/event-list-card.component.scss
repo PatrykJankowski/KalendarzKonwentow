@@ -28,7 +28,11 @@
     width: 100%;
     margin-top: 5px;
     margin-bottom: 5px;
-    border-radius: 0;
+    border-radius: 1px;
+
+    box-shadow: 0 0 1px;
+
+
   }
 
   &__inner {
@@ -72,7 +76,7 @@
   }
 
   &__date {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     font-family: 'Open Sans', serif;
 

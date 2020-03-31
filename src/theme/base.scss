@@ -31,7 +31,9 @@ h3, h4 {
   color: #000 !important;
 }
 
-
+.header-md::after {
+  bottom: -3px;
+}
 
 .alert-radio-label {
   padding-inline-start: 40px !important;

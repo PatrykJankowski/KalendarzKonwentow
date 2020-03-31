@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, ToastController } from '@ionic/angular';
 
 import { Geolocation, Network, Toast } from '@capacitor/core';
 
@@ -65,7 +65,7 @@ export class FiltersComponent implements OnInit, OnChanges {
 
   isLoading = false;
 
-  constructor(private filtersService: FiltersService, private dataService: DataService, private favouritesService: FavouriteService, public loadingController: LoadingController, private changeDetectorRef: ChangeDetectorRef) {
+  constructor(private filtersService: FiltersService, private dataService: DataService, private favouritesService: FavouriteService, public loadingController: LoadingController, public toastController: ToastController, private changeDetectorRef: ChangeDetectorRef) {
     this.getLocation();
   }
 
@@ -118,9 +118,11 @@ export class FiltersComponent implements OnInit, OnChanges {
           }).catch(() => {
             // this.filterEvents(this.originalEvents);
             this.dismiss();
-            /*Toast.show({
-              text: 'Włącz GPS i spróbuj ponownie'
-            });*/
+            this.toastController.create({
+              message: '<center>Nie udało się zlokalizować Twojego urządzenia. :(<br>Sprawdź ustawienia GPS i spróbuj ponownie.</center>',
+              position: 'middle',
+              duration: 3000
+            }).then((toastElement:HTMLIonToastElement) => toastElement.present());
           });
         } else {
           this.filterEvents(this.originalEvents);
@@ -134,8 +136,8 @@ export class FiltersComponent implements OnInit, OnChanges {
 
       this.dataService.getEvents(date)
         .subscribe((events: Array<Event>) => {
-          this.events = events;
-          this.originalEvents = events;
+          this.originalEvents = events.reverse();
+          this.events = this.originalEvents;
           this.filterEvents(this.originalEvents);
           this.locations = [];
           this.initFilters();

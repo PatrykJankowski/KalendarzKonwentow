@@ -22,7 +22,7 @@ export class ArchivalEventsPage implements OnInit {
   constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private filtersService: FiltersService) {}
 
   public ngOnInit() {
-    this.events = this.activatedRoute.snapshot.data.events;
+    this.events = this.activatedRoute.snapshot.data.events.reverse();
 
     Network.addListener('networkStatusChange', (status) => {
       if(status.connected) {
@@ -56,7 +56,7 @@ export class ArchivalEventsPage implements OnInit {
 
   public refresh(ev) {
     this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
-      this.events = events;
+      this.events = events.reverse();
       ev.detail.complete();
     });
   }
