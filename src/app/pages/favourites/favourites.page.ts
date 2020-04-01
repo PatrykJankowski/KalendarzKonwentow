@@ -1,9 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { Network, NetworkStatus } from '@capacitor/core';
+
 import { Event } from '@models/event.model';
 import { DataService } from '@services/data.service';
 import { FavouriteService } from '@services/favourites.service';
+import { NetworkService } from '@services/network.service';
 
 @Component({
   selector: 'app-favourites',
@@ -16,11 +19,25 @@ export class FavouritesPage implements OnInit, OnChanges {
   @Input() filteredEvents: Array<Event> = [];
 
   public events: Array<Event> = [];
+  public _networkStatus: boolean = true;
 
-  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private changeDetectorRef: ChangeDetectorRef) {}
+  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private networkService: NetworkService, private changeDetectorRef: ChangeDetectorRef) {}
 
   public ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events;
+    this.networkService.getCurrentNetworkStatus().then((networkStatus: boolean) => {
+      this.networkStatus = networkStatus;
+      this.changeDetectorRef.markForCheck()
+    });
+
+    Network.addListener('networkStatusChange', (networkStatus: NetworkStatus) => {
+      this.networkStatus = networkStatus.connected;
+      this.changeDetectorRef.detectChanges();
+    });
+
+    this.favouritesService.favouritesChange.subscribe(events => {
+      this.changeDetectorRef.markForCheck();
+    });
 
     this.favouritesService.favouritesChange.subscribe(events => {
       this.filteredEvents = events;
@@ -43,6 +60,10 @@ export class FavouritesPage implements OnInit, OnChanges {
   public ngOnChanges() {
     this.events = this.activatedRoute.snapshot.data.events;
     this.eventsChange.emit(this.events);
+  }
+
+  private set networkStatus(networkStatus: boolean) {
+    this._networkStatus = networkStatus;
   }
 
   public trackByFn(index, item) {

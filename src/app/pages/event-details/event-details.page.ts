@@ -9,7 +9,6 @@ import { Plugins } from '@capacitor/core';
 import { EventDetails } from '@models/event.model';
 import { Event } from '@models/event.model';
 import { FavouriteService } from '@services/favourites.service';
-import { FiltersService } from '@services/filters.service';
 
 const { Storage } = Plugins;
 
@@ -23,7 +22,7 @@ export class EventDetailsPage {
   public eventDetails: EventDetails = this.activatedRoute.snapshot.data.eventDetails[0];
   public image: string;
 
-  constructor(private activatedRoute: ActivatedRoute, private filtersService: FiltersService, public favouritesService: FavouriteService, private calendar: Calendar, public  sanitizer: DomSanitizer, private changeDetectorRef: ChangeDetectorRef) {
+  constructor(private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private calendar: Calendar, public  sanitizer: DomSanitizer, private changeDetectorRef: ChangeDetectorRef) {
     Storage.get({key: 'img' + this.activatedRoute.snapshot.params.id}).then((image) => {
       if (image.value) {
         this.image = image.value;
@@ -37,7 +36,7 @@ export class EventDetailsPage {
   public addToCalendar(): void {
     this.calendar.createEventInteractively(
       this.eventDetails.name, this.eventDetails.location, this.eventDetails.description,
-      new Date(this.eventDetails.date_begin), new Date(this.eventDetails.date_end)).then();
+      new Date(this.eventDetails.date_begin+', 12:00'), new Date(this.eventDetails.date_end+', 12:00')).then();
   }
 
   public loadDefaultImage(event): void {

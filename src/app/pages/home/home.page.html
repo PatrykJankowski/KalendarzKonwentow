@@ -1,6 +1,7 @@
 <ion-header [translucent]="true">
   <ion-title class="header__title">
     <img src="assets/logo.png" alt="Konwenty Południowe" class="header__logo">
+    <img *ngIf="!_networkStatus" src="/assets/offline.png" class="header__offline">
   </ion-title>
   <app-filters [events]="events" (eventsFiltered)="eventsFiltered($event)" [enableVoivodeship]="true" [inRange]="true"></app-filters>
 </ion-header>
@@ -10,11 +11,7 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <!--<div class="scroll">
-    <app-event-list-card *ngFor="let event of filteredEvents; trackBy: trackByFn" [event]="event"></app-event-list-card>
-  </div>-->
-
   <ion-virtual-scroll class="scroll" [items]="filteredEvents" approxItemHeight="126px">
-    <app-event-list-card *virtualItem="let event" [event]="event" style="opacity:1"></app-event-list-card>
+    <app-event-list-card *virtualItem="let event" [event]="event" [networkStatus]="_networkStatus" style="opacity:1"></app-event-list-card>
   </ion-virtual-scroll>
 </ion-content>

@@ -18,56 +18,37 @@ export class FavouriteService {
 
   constructor() {
     this.getFavoritesEvents().then((favourites: Array<Event>) => this.favouritesEvents = favourites);
-      this.favouritesChange.subscribe((events) => {
-          this.favouritesEvents = events
-      })
+    this.favouritesChange.subscribe((events: Array<Event>) => {
+      this.favouritesEvents = events
+    })
   }
 
   public isFavourite(id: number): boolean {
-    if (!this.favouritesEvents) {
-      return false;
-    }
-
+    if (!this.favouritesEvents) return false;
     for (let i = 0; i < this.favouritesEvents.length; i++) {
-      if (this.favouritesEvents[i].id === id) {
-        return true;
-      }
+      if (this.favouritesEvents[i].id === id) return true;
     }
-
     return false;
   }
 
   public async addToFavorites(event: Event): Promise<any> {
-    return this.getFavoritesEvents()
-      .then((result: Array<Event>) => {
-        let favourites: Array<Event> = result;
-
-        if (!favourites) {
-          favourites = [];
-        }
-
-        favourites.push(event);
-        this.setFavouritesEvents(favourites);
-
-        return Storage.set({
-          key: this.STORAGE_KEY, value: JSON.stringify(favourites)
-        });
-      });
+    let favouritesEvents = await this.getFavoritesEvents();
+    if (!favouritesEvents) favouritesEvents = [];
+    favouritesEvents.push(event);
+    this.setFavouritesEvents(favouritesEvents);
+    return await Storage.set({
+      key: this.STORAGE_KEY, value: JSON.stringify(favouritesEvents)
+    });
   }
 
-  public removeFromFavourites(event: Event): Promise<any> {
-    return this.getFavoritesEvents()
-      .then((result: Array<Event>) => {
-        const index = result.findIndex(x => x.id === event.id);
-
-        result.splice(index, 1);
-
-        this.setFavouritesEvents(result);
-
-        return Storage.set({
-          key: this.STORAGE_KEY, value: JSON.stringify(result)
-        });
-      });
+  public async removeFromFavourites(event: Event): Promise<any> {
+    const favouritesEvents = await this.getFavoritesEvents();
+    const index = favouritesEvents.findIndex(x => x.id === event.id);
+    favouritesEvents.splice(index, 1);
+    this.setFavouritesEvents(favouritesEvents);
+    return await Storage.set({
+      key: this.STORAGE_KEY, value: JSON.stringify(favouritesEvents)
+    });
   }
 
   public getFavouritesEvents(events: Array<Event>): Array<Event> {
@@ -78,7 +59,7 @@ export class FavouriteService {
 
   private setFavouritesEvents(favouritesEvents: Array<Event>): void {
     this.favouritesEvents = favouritesEvents;
-      this.favouritesChange.next(this.favouritesEvents)
+    this.favouritesChange.next(this.favouritesEvents)
   }
 
   public async getFavoritesEvents(): Promise<any> {

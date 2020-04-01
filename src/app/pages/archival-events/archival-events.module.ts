@@ -16,7 +16,6 @@ import { ArchivalEventsPage } from './archival-events.page';
     FormsModule,
     IonicModule,
     ArchivalEventsPageRoutingModule,
-
     EventListCardComponentModule,
     FiltersComponentModule,
     HomeRouterModule,

@@ -9,7 +9,6 @@ const { Storage } = Plugins;
   providedIn: 'root'
 })
 export class FavouritesResolver implements Resolve<any> {
-  private refreshFlag: boolean = true;
   private readonly STORAGE_KEY: string = 'favoriteEvents';
 
   constructor() {}

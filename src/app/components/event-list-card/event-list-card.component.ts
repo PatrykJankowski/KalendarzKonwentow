@@ -16,38 +16,41 @@ const {Storage} = Plugins;
 })
 export class EventListCardComponent implements OnChanges {
   @Input() event: Event;
+  @Input() networkStatus: boolean = true;
 
   constructor(public favouritesService: FavouriteService, private changeDetectorRef: ChangeDetectorRef, public sanitizer: DomSanitizer) {
     this.changeDetectorRef.markForCheck();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    Storage.get({key: 'img' + this.event.id}).then((image) => {
-      if (image.value) {
-        this.event.image = image.value;
-        this.changeDetectorRef.markForCheck();
-      } else {
-        const toDataURL = url => fetch(url)
-          .then(response => response.blob())
-          .then(blob => new Promise((resolve, reject) => {
-            if (blob.type === 'text/html') {
-              // this.event.image = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-              resolve('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
-            } else {
-              const reader = new FileReader();
-              reader.onloadend = () => resolve(reader.result);
-              reader.onerror = reject;
-              reader.readAsDataURL(blob);
-            }
-          }));
+      Storage.get({key: 'img' + this.event.id}).then((image) => {
+        if (image.value) {
+          this.event.image = image.value;
+          this.changeDetectorRef.markForCheck();
+        } else if(this.networkStatus) {
+          const toDataURL = url => fetch(url)
+            .then(response => response.blob())
+            .then(blob => new Promise((resolve, reject) => {
+              if (blob.type === 'text/html') {
+                // this.event.image = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+                resolve('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+              } else {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+              }
+            }));
 
-        toDataURL(this.event.image).then((dataUrl: string) => {
-          Storage.set({key: 'img' + this.event.id, value: dataUrl});
-        });
+          toDataURL(this.event.image).then((dataUrl: string) => {
+            Storage.set({key: 'img' + this.event.id, value: dataUrl});
+          });
 
-        this.changeDetectorRef.markForCheck();
-      }
-    });
+          this.changeDetectorRef.markForCheck();
+        } else {
+          this.event.image = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        }
+      });
   }
 
   public addToFavourites(event: Event): void {

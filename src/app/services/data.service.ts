@@ -59,20 +59,16 @@ export class DataService {
   }
 
   private async setLocalData(key: string, data: Event): Promise<any> {
-    try {
-      await Storage.set({
-        key: `${this.API_STORAGE_KEY}-${key}`, value: JSON.stringify({data})
-      });
-    } catch(err) {
-      return err;
-    }
+    await Storage.set({
+      key: `${this.API_STORAGE_KEY}-${key}`, value: JSON.stringify({data})
+    });
   }
 
   public async getLocalData(key: string): Promise<any> {
     try {
       const storageData = await Storage.get({ key: `${this.API_STORAGE_KEY}-${key}` });
       return JSON.parse(storageData.value).data;
-    } catch(err) {
+    } catch(error) {
       return [];
     }
   }

@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { Network, Plugins } from '@capacitor/core';
+import { Network, NetworkStatus, Plugins } from '@capacitor/core';
 
 import { Event } from '@models/event.model';
 import { DataService } from '@services/data.service';
 import { FavouriteService } from '@services/favourites.service';
+import { NetworkService } from '@services/network.service';
 
 const {Storage} = Plugins;
 
@@ -19,35 +20,27 @@ export class HomePage implements OnInit {
   @Input() filteredEvents: Array<Event> = [];
 
   public events: Array<Event> = [];
-  private status: boolean;
+  public _networkStatus: boolean = true;
 
-  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private changeDetectorRef: ChangeDetectorRef) {}
+  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private networkService: NetworkService, private changeDetectorRef: ChangeDetectorRef) {}
 
   public ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events;
-
-    // do serwisu
-    Network.getStatus().then((status) => {
-      this.status = status.connected;
+    this.networkService.getCurrentNetworkStatus().then((networkStatus: boolean) => {
+      this.networkStatus = networkStatus;
+      this.changeDetectorRef.markForCheck()
     });
 
-    Network.addListener('networkStatusChange', (status) => {
-      this.status = status.connected;
-      if (status.connected) {
-        this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
-          Storage.clear().then(() => {
-            this.events = events;
-            this.changeDetectorRef.markForCheck();
-          });
-        });
-      }
+    Network.addListener('networkStatusChange', (networkStatus: NetworkStatus) => {
+      this.networkStatus = networkStatus.connected;
+      if (networkStatus.connected) this.loadData();
+      this.changeDetectorRef.detectChanges();
     });
 
     this.favouritesService.favouritesChange.subscribe(events => {
       this.changeDetectorRef.markForCheck();
     });
   }
-
 
   public ionViewWillEnter(): void {
     // Remove dropdown arrow; hope for better solution in future Ionic version
@@ -58,13 +51,17 @@ export class HomePage implements OnInit {
           element.setAttribute('style', 'display: none');
         });
     });
-
-    // this.changeDetectorRef.markForCheck();
-    // this.changeDetectorRef.detectChanges();
   }
 
-  public trackByFn(index, item) {
-    return item.id;
+  private loadData() {
+    this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
+      if (this.events.length !== events.length) {
+        // Storage.clear().then(() => {
+          this.events = events;
+          this.changeDetectorRef.markForCheck();
+        // });
+      }
+    });
   }
 
   public eventsFiltered(event) {
@@ -72,28 +69,39 @@ export class HomePage implements OnInit {
   }
 
   public refresh(ev) {
-    if (this.status) {
+    if (this._networkStatus) {
       this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
-        Storage.clear().then(() => {
+        // Storage.clear().then(() => {
           this.events = events;
           ev.detail.complete();
           this.changeDetectorRef.markForCheck();
-        }).catch(() => ev.detail.complete());
+        //}).catch(() => ev.detail.complete());
       });
     } else {
       ev.detail.complete();
     }
   }
 
+  public trackByFn(index, item) {
+    return item.id;
+  }
+
+  private set networkStatus(networkStatus: boolean) {
+    this._networkStatus = networkStatus
+  }
+
   /*  public refresh(ev) {
         this.dataService.getEvents('', true).subscribe((s) => {
           this.events = [{id: 1107,
-          name: "IV Pałacowy Uniwersytet Fantastyczny",
-          date_begin: "2020-06-01",
-          date_end: "2020-07-01",
-          event_type: "Fantastyka",
-          image: "https://www.konwenty-poludniowe.pl/images/joodb/db1/img1107.jpg",
-          location: "Brzeg"
+            name: 'IV Pałacowy Uniwersytet Fantastyczny',
+            date_begin: '2020-06-01',
+            date_end: '2020-07-01',
+            event_type: 'Fantastyka',
+            image: 'https://www.konwenty-poludniowe.pl/images/joodb/db1/img1107.jpg',
+            location: 'Brzeg',
+            voivodeship: 'mazowieckie',
+            lat: '22',
+            long: '55'
           }];
         console.log(this.events); ev.detail.complete();});
     }*/

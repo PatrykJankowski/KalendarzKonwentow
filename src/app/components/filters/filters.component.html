@@ -1,7 +1,7 @@
 <ion-toolbar class="toolbar">
   <ion-grid>
     <ion-row>
-      <ion-col size="{{ columns }}">
+      <ion-col size="{{ _noColumns }}">
         <ion-item lines="none" class="ion-no-padding">
           <div class="filter">
             <ion-label class="filter__label">Kategoria:</ion-label>
@@ -18,7 +18,7 @@
         </ion-item>
       </ion-col>
 
-      <ion-col *ngIf="enableVoivodeship" size="{{ columns }}">
+      <ion-col *ngIf="enableVoivodeship" size="{{ _noColumns }}">
         <ion-item lines="none" class="ion-no-padding">
           <div class="filter">
             <ion-label class="filter__label">Województwo:</ion-label>
@@ -35,7 +35,7 @@
         </ion-item>
       </ion-col>
 
-      <ion-col size="{{ columns }}">
+      <ion-col size="{{ _noColumns }}">
         <ion-item lines="none" class="ion-no-padding">
           <div class="filter">
             <ion-label class="filter__label">Miasto:</ion-label>
@@ -52,7 +52,7 @@
         </ion-item>
       </ion-col>
 
-      <ion-col *ngIf="inRange" size="{{ columns }}">
+      <ion-col *ngIf="inRange" size="{{ _noColumns }}">
         <ion-item lines="none" class="ion-no-padding">
           <div class="filter">
             <ion-label class="filter__label">W pobliżu:</ion-label>
@@ -70,12 +70,12 @@
         </ion-item>
       </ion-col>
 
-      <ion-col *ngIf="enableDate" size="{{ columns }}">
+      <ion-col *ngIf="enableDate" size="{{ _noColumns }}">
         <ion-item lines="none" class="ion-no-padding">
           <div class="filter">
             <ion-label class="filter__label">Data:</ion-label>
             <ion-select class="filter__option" ok-text="Potwierdź" cancel-text="Anuluj" [formControl]="dateFilter">
-              <ion-select-option value="">{{ maxDate }}</ion-select-option>
+              <ion-select-option value="">{{ currentYear }}</ion-select-option>
               <ion-select-option *ngFor="let date of dates" value="{{ date }}">{{ date }}</ion-select-option>
             </ion-select>
             <div class="filter__dots">
