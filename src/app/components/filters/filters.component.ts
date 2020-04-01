@@ -184,7 +184,7 @@ export class FiltersComponent implements OnInit, OnChanges {
   private initFilters(): void {
     let originalEvents = this.originalEvents;
 
-    this.locations = [];
+    // this.locations = [];
 
     if (this.enableDate && !this.date) {
       const todayDate: Date = new Date();
