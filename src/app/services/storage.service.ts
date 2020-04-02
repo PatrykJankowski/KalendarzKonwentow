@@ -10,19 +10,17 @@ const { Storage } = Plugins;
   providedIn: 'root'
 })
 export class StorageService {
-  private readonly API_STORAGE_KEY: string = 'KK';
-
   constructor() {}
   
   public async setLocalData(key: string, data: Event): Promise<any> {
     await Storage.set({
-      key: `${this.API_STORAGE_KEY}-${key}`, value: JSON.stringify({data})
+      key, value: JSON.stringify({data})
     });
   }
 
   public async getLocalData(key: string): Promise<any> {
     try {
-      const storageData = await Storage.get({ key: `${this.API_STORAGE_KEY}-${key}` });
+      const storageData = await Storage.get({ key });
       return JSON.parse(storageData.value).data;
     } catch(error) {
       return [];

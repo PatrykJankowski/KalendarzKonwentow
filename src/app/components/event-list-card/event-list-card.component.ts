@@ -18,7 +18,7 @@ export class EventListCardComponent implements OnChanges {
   @Input() event: Event;
   @Input() networkStatus: boolean = true;
 
-  constructor(public favouritesService: FavouriteService, private changeDetectorRef: ChangeDetectorRef, public sanitizer: DomSanitizer) {
+  constructor(private changeDetectorRef: ChangeDetectorRef, public favouritesService: FavouriteService, public sanitizer: DomSanitizer) {
     this.changeDetectorRef.markForCheck();
   }
 
@@ -40,7 +40,7 @@ export class EventListCardComponent implements OnChanges {
       });
   }
 
-  private async convertImageToBase64(url) {
+  private async convertImageToBase64(url): Promise<any> {
     const response = await fetch(url);
     const blob = await response.blob();
     const result = new Promise((resolve, reject) => {
@@ -54,7 +54,7 @@ export class EventListCardComponent implements OnChanges {
         reader.readAsDataURL(blob);
       }
     });
-    
+
     return await result;
   }
 
@@ -66,11 +66,11 @@ export class EventListCardComponent implements OnChanges {
     this.favouritesService.removeFromFavourites(event).then(() => this.changeDetectorRef.markForCheck());
   }
 
-  public isFavourite(id: number) {
+  public isFavourite(id: number): boolean {
     return this.favouritesService.isFavourite(id);
   }
 
-  public loadDefaultImage(event): void {
+  /*public loadDefaultImage(event): void {
     event.target.src = '/assets/no-image.jpg';
-  }
+  }*/
 }
