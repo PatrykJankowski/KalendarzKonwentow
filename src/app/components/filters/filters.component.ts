@@ -68,7 +68,7 @@ export class FiltersComponent implements OnInit, OnChanges {
   public locationFilter: FormControl;
   public dateFilter: FormControl;
   public rangeFilter: FormControl;
-  public searchField: FormControl;
+  // public searchField: FormControl;
 
   constructor(private dataService: DataService, private favouritesService: FavouriteService, public loadingController: LoadingController, public toastController: ToastController) {}
 
@@ -238,7 +238,7 @@ export class FiltersComponent implements OnInit, OnChanges {
         this.filterByFutureDate(event.date_end, todayDate, futureEvents) ||
         this.filterByPastDate(event.date_end, date, !futureEvents && !this.fav) ||
         this.fav
-      )
+      ))
     );
 
     this.eventsFiltered.emit(filteredEvents);
