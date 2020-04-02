@@ -7,7 +7,7 @@ export interface Event {
     image: string;
     date_begin: string;
     date_end: string;
-    cancelled: boolean;
+    cancelled: number;
     lat: string;
     long: string;
 }

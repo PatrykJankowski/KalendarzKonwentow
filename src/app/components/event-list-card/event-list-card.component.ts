@@ -50,7 +50,7 @@ export class EventListCardComponent implements OnChanges {
       } else {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
-        reader.onerror = () => resolve('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+        reader.onerror = () => reject;
         reader.readAsDataURL(blob);
       }
     });

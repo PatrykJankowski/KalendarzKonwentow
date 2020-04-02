@@ -102,7 +102,7 @@ export class FiltersComponent implements OnInit, OnChanges {
             }).catch(() => {
               this.dismiss();
               this.toastController.create({
-                message: '<center>Nie udało się zlokalizować Twojego urządzenia. :(<br>Sprawdź ustawienia GPS i spróbuj ponownie.</center>',
+                message: '<center>Nie udało się zlokalizować Twojego urządzenia.<br>Sprawdź ustawienia GPS i spróbuj ponownie.</center>',
                 position: 'middle',
                 duration: 5000
               }).then((toastElement:HTMLIonToastElement) => toastElement.present());
