@@ -51,9 +51,10 @@
       <p>{{ eventDetails.event_type }}</p>
 
       <h4 class="event-details__caption">Data:</h4>
-      <p *ngIf="eventDetails.date_end == eventDetails.date_begin; else date_end">{{ eventDetails.date_begin }}</p>
+      <p *ngIf="eventDetails.cancelled == 1" class="event-details__cancelled">Odwołany</p>
+      <p *ngIf="eventDetails.date_end == eventDetails.date_begin; else date_end" [class]="eventDetails.cancelled == 1 ? 'event-details__date--cancelled' : ''">{{ eventDetails.date_begin | date: "dd.MM.y"}}</p>
       <ng-template #date_end>
-        <p>{{ eventDetails.date_begin | date: "dd.MM.y" }} - {{ eventDetails.date_end | date: "dd.MM.y"}}</p>
+        <p [class]="eventDetails.cancelled == 1 ? 'event-details__date--cancelled' : ''">{{ eventDetails.date_begin | date: "dd.MM.y" }} - {{ eventDetails.date_end | date: "dd.MM.y"}}</p>
       </ng-template>
 
       <h4 class="event-details__caption">Adres:</h4>

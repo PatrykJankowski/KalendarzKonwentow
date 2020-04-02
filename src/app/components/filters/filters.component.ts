@@ -18,8 +18,8 @@ import { FavouriteService } from '@services/favourites.service';
 export class FiltersComponent implements OnInit, OnChanges {
   @Input() enableDate = false;
   @Input() enableVoivodeship = false;
+  @Input() enableInRange = false;
   @Input() fav = false;
-  @Input() inRange = false;
   @Input() events: Array<Event>;
 
   @Output() eventsFiltered = new EventEmitter();
@@ -57,7 +57,6 @@ export class FiltersComponent implements OnInit, OnChanges {
   public _date = '';
   public _range = 999999;
   public _searchingTerm = '';
-
   public _noColumns: number;
 
   public currentYear: number = new Date().getFullYear();
@@ -71,33 +70,74 @@ export class FiltersComponent implements OnInit, OnChanges {
   public rangeFilter: FormControl;
   public searchField: FormControl;
 
-  constructor(private dataService: DataService, private favouritesService: FavouriteService, public loadingController: LoadingController, public toastController: ToastController) {
-    this.getLocation();
-  }
+  constructor(private dataService: DataService, private favouritesService: FavouriteService, public loadingController: LoadingController, public toastController: ToastController) {}
 
   public ngOnInit() {
+    this.getLocation();
+
     this.originalEvents = this.events;
     this.noColumns = this.calculateNoColumns();
     this.filterEvents(this.originalEvents);
     this.initFilters();
 
-    this.categoryFilter = new FormControl();
-    this.voivodeshipFilter = new FormControl();
-    this.locationFilter = new FormControl();
-    this.rangeFilter = new FormControl();
-    this.dateFilter = new FormControl();
-    this.searchField = new FormControl();
+    if(this.enableVoivodeship) {
+      this.voivodeshipFilter = new FormControl();
+      this.voivodeshipFilter.valueChanges.subscribe((voivodeship: string) => {
+        this.voivodeship = voivodeship;
+        this.filterEvents(this.originalEvents);
+      });
+    }
 
+    if(this.enableInRange) {
+      this.rangeFilter = new FormControl();
+      this.rangeFilter.valueChanges.subscribe((range: number) => {
+        this.present().then(() => {
+          if(!range) range = 9999999;
+          this.range = range;
+
+          if (range < 9999999) { // jesli nie wszystkie
+            this.getLocation().then(() => {
+              this.filterEvents(this.originalEvents);
+              this.dismiss();
+            }).catch(() => {
+              this.dismiss();
+              this.toastController.create({
+                message: '<center>Nie udało się zlokalizować Twojego urządzenia. :(<br>Sprawdź ustawienia GPS i spróbuj ponownie.</center>',
+                position: 'middle',
+                duration: 5000
+              }).then((toastElement:HTMLIonToastElement) => toastElement.present());
+            });
+          } else {
+            this.filterEvents(this.originalEvents);
+            this.dismiss();
+          }
+        });
+      });
+    }
+
+    if(this.enableDate) {
+      this.dateFilter = new FormControl();
+      this.dateFilter.valueChanges.subscribe((date: string) => {
+        this.date = date;
+
+        this.dataService.getEvents(date)
+          .subscribe((events: Array<Event>) => {
+            this.originalEvents = events.reverse();
+            this.events = this.originalEvents;
+            this.filterEvents(this.originalEvents);
+            this.locations = [];
+            this.initFilters();
+          });
+      });
+    }
+
+    this.categoryFilter = new FormControl();
     this.categoryFilter.valueChanges.subscribe((category: string) => {
       this.category = category;
       this.filterEvents(this.originalEvents);
     });
 
-    this.voivodeshipFilter.valueChanges.subscribe((voivodeship: string) => {
-      this.voivodeship = voivodeship;
-      this.filterEvents(this.originalEvents);
-    });
-
+    this.locationFilter = new FormControl();
     this.locationFilter.valueChanges.subscribe((location: string) => {
       this.location = location;
       this.filterEvents(this.originalEvents);
@@ -108,43 +148,7 @@ export class FiltersComponent implements OnInit, OnChanges {
       this.initFilters();
     });
 
-    this.rangeFilter.valueChanges.subscribe((range: number) => {
-      this.present().then(() => {
-        if(!range) range = 9999999;
-        this.range = range;
-
-        if (range < 9999999) { // jesli nie wszystkie
-          this.getLocation().then(() => {
-            this.filterEvents(this.originalEvents);
-            this.dismiss();
-          }).catch(() => {
-            this.dismiss();
-            this.toastController.create({
-              message: '<center>Nie udało się zlokalizować Twojego urządzenia. :(<br>Sprawdź ustawienia GPS i spróbuj ponownie.</center>',
-              position: 'middle',
-              duration: 5000
-            }).then((toastElement:HTMLIonToastElement) => toastElement.present());
-          });
-        } else {
-          this.filterEvents(this.originalEvents);
-          this.dismiss();
-        }
-      });
-    });
-
-    this.dateFilter.valueChanges.subscribe((date: string) => {
-      this.date = date;
-
-      this.dataService.getEvents(date)
-        .subscribe((events: Array<Event>) => {
-          this.originalEvents = events.reverse();
-          this.events = this.originalEvents;
-          this.filterEvents(this.originalEvents);
-          this.locations = [];
-          this.initFilters();
-        });
-    });
-
+    this.searchField = new FormControl();
     this.searchField.valueChanges.subscribe((searchingTerm: string) => {
       this.searchingTerm = searchingTerm;
       this.filterEvents(this.originalEvents);
@@ -179,7 +183,6 @@ export class FiltersComponent implements OnInit, OnChanges {
     this.isLoading = false;
     return await this.loadingController.dismiss().then();
   }
-
 
   private initFilters(): void {
     let originalEvents = this.originalEvents;
@@ -219,21 +222,20 @@ export class FiltersComponent implements OnInit, OnChanges {
 
     const todayDate: Date = new Date();
     const date = this.date ? this.date + '-12-31' : todayDate;
-    let futureEvents = false;
 
+    let futureEvents = false;
     if (!this.date && !this.enableDate) {
       futureEvents = true;
     }
 
     const filteredEvents = events.filter((event: Event) => (
-        this.filterByCategory(event) &&
-        this.filterByLocation(event) &&
-        this.filterByVoivodeship(event) &&
-        (
-          (futureEvents && new Date(event.date_end) >= todayDate) ||
-          (!futureEvents && !this.fav && new Date(event.date_end) <= new Date(date)) ||
-          (this.fav)
-        )
+      this.filterByCategory(event) &&
+      this.filterByLocation(event) &&
+      this.filterByVoivodeship(event) &&
+      (
+        (this.filterByFutureDate(event.date_end, todayDate, futureEvents)) ||
+        (this.filterByPastDate(event.date_end, date, !futureEvents && !this.fav)) ||
+        (this.fav))
       )
       && this.filterBySearchingTerm(event)
       && this.filterByDistance(event)
@@ -260,7 +262,7 @@ export class FiltersComponent implements OnInit, OnChanges {
 
     if(this.enableDate) noFilters +=1;
     if(this.enableVoivodeship) noFilters +=1;
-    if(this.inRange) noFilters +=1;
+    if(this.enableInRange) noFilters +=1;
 
     return 12/noFilters;
   }
@@ -276,6 +278,7 @@ export class FiltersComponent implements OnInit, OnChanges {
   }
 
   private filterByVoivodeship(event): boolean {
+    if(!this.enableVoivodeship) return true;
     return event.voivodeship.indexOf(this._voivodeship) > -1;
   }
 
@@ -288,8 +291,16 @@ export class FiltersComponent implements OnInit, OnChanges {
   }
 
   private filterByDistance(event): boolean {
-    return (!this.lat || !this.lat) ||
-      (this.calculateDistance(this.lat, this.long, event.lat, event.long) <= this._range);
+    if(!this.enableInRange) return true;
+    return (event.location === 'Internet') || (!this.lat || !this.lat) || (this.calculateDistance(this.lat, this.long, event.lat, event.long) <= this._range);
+  }
+
+  private filterByFutureDate(eventDate, date, filterOn): boolean {
+    return filterOn && new Date(eventDate) >= date
+  }
+
+  private filterByPastDate(eventDate, date, filterOn): boolean {
+    return filterOn && new Date(eventDate) <= new Date(date)
   }
 
   private set category(category: string) {

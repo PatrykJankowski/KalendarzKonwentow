@@ -98,6 +98,15 @@
     color: var(--ion-text-color);
   }
 
+  &__cancelled {
+    color: red;
+    font-weight: 700;
+  }
+
+  &__date--cancelled {
+    text-decoration: line-through;
+  }
+
   &__map {
     width: 100%;
     height: 240px;

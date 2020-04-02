@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { Network, Plugins } from '@capacitor/core';
+import { Network, NetworkStatus } from '@capacitor/core';
 
 import { Event } from '@models/event.model';
 import { DataService } from '@services/data.service';
 import { FavouriteService } from '@services/favourites.service';
 import { NetworkService } from '@services/network.service';
-
-const {Storage} = Plugins;
+import { StorageService } from '@services/storage.service';
 
 @Component({
   selector: 'app-archival-events',
@@ -17,12 +16,18 @@ const {Storage} = Plugins;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ArchivalEventsPage implements OnInit {
-  @Input() filteredEvents: Array<Event> = [];
+  @Input() _filteredEvents: Array<Event> = [];
 
-  public events: Array<Event> = [];
+  public _events: Array<Event> = [];
   public _networkStatus: boolean = true;
 
-  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, public favouritesService: FavouriteService, private networkService: NetworkService, private changeDetectorRef: ChangeDetectorRef) {}
+  constructor(private activatedRoute: ActivatedRoute,
+              private changeDetectorRef: ChangeDetectorRef,
+              private dataService: DataService,
+              private networkService: NetworkService,
+              private storageService: StorageService,
+              private favouritesService: FavouriteService
+  ) {}
 
   public ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events.reverse();
@@ -31,10 +36,14 @@ export class ArchivalEventsPage implements OnInit {
       this.changeDetectorRef.markForCheck();
     });
 
-    Network.addListener('networkStatusChange', (networkStatus) => {
+    Network.addListener('networkStatusChange', (networkStatus: NetworkStatus) => {
       this.networkStatus = networkStatus.connected;
-      if (networkStatus.connected) this.loadData();
+      if (networkStatus.connected) this.loadData(false, !!this.events.length);
       this.changeDetectorRef.detectChanges();
+    });
+
+    this.favouritesService.favouritesChange.subscribe(events => {
+      this.changeDetectorRef.markForCheck();
     });
   }
 
@@ -49,36 +58,41 @@ export class ArchivalEventsPage implements OnInit {
     });
   }
 
-  private loadData() {
-    if (!this.events.length) {
+  private async loadData(clearStorage: boolean, isEventsListEmpty: boolean) {
+    if(isEventsListEmpty) {
       this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
-        if (this.events.length !== events.length) {
-          // Storage.clear().then(() => { //czysci ulubione !!!!!!!!!!!!!!!
-            this.events = events.reverse();
-            this.changeDetectorRef.markForCheck();
-          // });
+        if(clearStorage) {
+          this.storageService.removeCachedImages()
+            .then(() => {
+              this.events = events.reverse();
+              this.changeDetectorRef.markForCheck();
+            });
+        } else if (this.events.length !== events.length) {
+          this.events = events.reverse();
+          this.changeDetectorRef.markForCheck();
         }
       });
     }
-  }
-
-  private set networkStatus(networkStatus: boolean) {
-    this._networkStatus = networkStatus;
   }
 
   public trackByFn(index, item) {
     return item.id;
   }
 
-  public eventsFiltered(event) {
-    this.filteredEvents = event;
+  public set filteredEvents(event) {
+    this._filteredEvents = event;
   }
 
-  public refresh(ev) {
-    this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
-      this.events = events.reverse();
-      this.changeDetectorRef.markForCheck();
-      ev.detail.complete();
-    });
+  private set events(events: Array<Event>) {
+    this._events = events
+  }
+
+  private set networkStatus(networkStatus: boolean) {
+    this._networkStatus = networkStatus
+  }
+
+  public async refresh(ev) {
+    if (this._networkStatus) await this.loadData(true, true);
+    ev.detail.complete();
   }
 }
