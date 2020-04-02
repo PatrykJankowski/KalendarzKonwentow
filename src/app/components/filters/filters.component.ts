@@ -56,7 +56,7 @@ export class FiltersComponent implements OnInit, OnChanges {
   public _location = '';
   public _date = '';
   public _range = 999999;
-  public _searchingTerm = '';
+  // public _searchingTerm = '';
   public _noColumns: number;
 
   public currentYear: number = new Date().getFullYear();
@@ -148,11 +148,11 @@ export class FiltersComponent implements OnInit, OnChanges {
       this.initFilters();
     });
 
-    this.searchField = new FormControl();
+    /*this.searchField = new FormControl();
     this.searchField.valueChanges.subscribe((searchingTerm: string) => {
       this.searchingTerm = searchingTerm;
       this.filterEvents(this.originalEvents);
-    });
+    });*/
   }
 
   public ngOnChanges(changes: SimpleChanges) {
@@ -221,10 +221,10 @@ export class FiltersComponent implements OnInit, OnChanges {
     }
 
     const todayDate: Date = new Date();
-    const date = this.date ? this.date + '-12-31' : todayDate;
+    const date = this._date ? this._date + '-12-31' : todayDate;
 
     let futureEvents = false;
-    if (!this.date && !this.enableDate) {
+    if (!this._date && !this.enableDate) {
       futureEvents = true;
     }
 
@@ -232,13 +232,13 @@ export class FiltersComponent implements OnInit, OnChanges {
       this.filterByCategory(event) &&
       this.filterByLocation(event) &&
       this.filterByVoivodeship(event) &&
+      this.filterByDistance(event) &&
+      // this.filterBySearchingTerm(event) &&
       (
-        (this.filterByFutureDate(event.date_end, todayDate, futureEvents)) ||
-        (this.filterByPastDate(event.date_end, date, !futureEvents && !this.fav)) ||
-        (this.fav))
+        this.filterByFutureDate(event.date_end, todayDate, futureEvents) ||
+        this.filterByPastDate(event.date_end, date, !futureEvents && !this.fav) ||
+        this.fav
       )
-      && this.filterBySearchingTerm(event)
-      && this.filterByDistance(event)
     );
 
     this.eventsFiltered.emit(filteredEvents);
@@ -286,13 +286,15 @@ export class FiltersComponent implements OnInit, OnChanges {
     return event.event_type.indexOf(this._category) > -1;
   }
 
-  private filterBySearchingTerm(event): boolean {
+  /*private filterBySearchingTerm(event): boolean {
     return event.name.toLowerCase().indexOf(this._searchingTerm.toLowerCase()) > -1;
-  }
+  }*/
 
   private filterByDistance(event): boolean {
     if(!this.enableInRange) return true;
-    return (event.location === 'Internet') || (!this.lat || !this.lat) || (this.calculateDistance(this.lat, this.long, event.lat, event.long) <= this._range);
+    return event.location === 'Internet' ||
+           (!this.lat || !this.lat) ||
+           this.calculateDistance(this.lat, this.long, event.lat, event.long) <= this._range;
   }
 
   private filterByFutureDate(eventDate, date, filterOn): boolean {
@@ -323,9 +325,9 @@ export class FiltersComponent implements OnInit, OnChanges {
     this._date = date;
   }
 
-  private set searchingTerm(searchingTerm: string) {
+  /*private set searchingTerm(searchingTerm: string) {
     this._searchingTerm = searchingTerm;
-  }
+  }*/
 
   private set noColumns(noColumns) {
     this._noColumns = noColumns;

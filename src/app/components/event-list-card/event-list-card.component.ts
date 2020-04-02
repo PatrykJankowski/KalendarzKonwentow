@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { Plugins } from '@capacitor/core';
@@ -56,20 +56,6 @@ export class EventListCardComponent implements OnChanges {
     });
     
     return await result;
-
-   /*return fetch(url)
-      .then(response => response.blob())
-      .then(blob => new Promise((resolve, reject) => {
-        if (blob.type === 'text/html') {
-          // this.event.image = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-          resolve('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
-        } else {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        }
-      }));*/
   }
 
   public addToFavourites(event: Event): void {
