@@ -5,7 +5,6 @@ import { Plugins } from '@capacitor/core';
 
 import { Event } from '@models/event.model';
 import { FavouriteService } from '@services/favourites.service';
-import { HexBase64BinaryEncoding } from 'crypto';
 
 const {Storage} = Plugins;
 
@@ -19,7 +18,7 @@ export class EventListCardComponent implements OnChanges {
   @Input() event: Event;
   @Input() networkStatus: boolean = true;
   
-  private transparentImage: HexBase64BinaryEncoding = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  private transparentImage: string = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
   constructor(private changeDetectorRef: ChangeDetectorRef, public favouritesService: FavouriteService, public sanitizer: DomSanitizer) {
     this.changeDetectorRef.markForCheck();
