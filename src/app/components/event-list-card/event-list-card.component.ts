@@ -5,6 +5,7 @@ import { Plugins } from '@capacitor/core';
 
 import { Event } from '@models/event.model';
 import { FavouriteService } from '@services/favourites.service';
+import { HexBase64BinaryEncoding } from 'crypto';
 
 const {Storage} = Plugins;
 
@@ -17,27 +18,30 @@ const {Storage} = Plugins;
 export class EventListCardComponent implements OnChanges {
   @Input() event: Event;
   @Input() networkStatus: boolean = true;
+  
+  private transparentImage: HexBase64BinaryEncoding = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
   constructor(private changeDetectorRef: ChangeDetectorRef, public favouritesService: FavouriteService, public sanitizer: DomSanitizer) {
     this.changeDetectorRef.markForCheck();
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    // console.log(changes.event.currentValue.image);
+    if(this.event.image.includes('http') || this.event.image === this.transparentImage) {
       Storage.get({key: 'img' + this.event.id}).then((image) => {
         if (image.value) {
           this.event.image = image.value;
           this.changeDetectorRef.markForCheck();
         } else if(this.networkStatus) {
-
           this.convertImageToBase64(this.event.image).then((dataUrl: string) => {
             Storage.set({key: 'img' + this.event.id, value: dataUrl});
           });
-
           this.changeDetectorRef.markForCheck();
         } else {
-          this.event.image = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+          this.event.image = this.transparentImage;
         }
       });
+    }
   }
 
   private async convertImageToBase64(url): Promise<any> {
@@ -46,7 +50,7 @@ export class EventListCardComponent implements OnChanges {
     const result = new Promise((resolve, reject) => {
       if (blob.type === 'text/html') {
         // this.event.image = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-        resolve('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+        resolve(this.transparentImage);
       } else {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
