@@ -17,6 +17,7 @@ import { StorageService } from '@services/storage.service';
 })
 export class ArchivalEventsPage implements OnInit {
   @Input() _filteredEvents: Array<Event> = [];
+  @Input() _year: string;
 
   public _events: Array<Event> = [];
   public _networkStatus: boolean = true;
@@ -38,7 +39,7 @@ export class ArchivalEventsPage implements OnInit {
 
     Network.addListener('networkStatusChange', (networkStatus: NetworkStatus) => {
       this.networkStatus = networkStatus.connected;
-      if (networkStatus.connected) this.loadData(false, !!this.events.length);
+      if (networkStatus.connected) this.loadData(false, !!this._events.length);
       this.changeDetectorRef.detectChanges();
     });
 
@@ -60,7 +61,7 @@ export class ArchivalEventsPage implements OnInit {
 
   private async loadData(clearStorage: boolean, isEventsListEmpty: boolean) {
     if(isEventsListEmpty) {
-      this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
+      this.dataService.getEvents(this._year, true).subscribe((events: Array<Event>) => {
         if(clearStorage) {
           this.storageService.removeCachedImages()
             .then(() => {
@@ -83,6 +84,17 @@ export class ArchivalEventsPage implements OnInit {
     this._filteredEvents = event;
   }
 
+  public set year(event) {
+
+    this.dataService.getEvents(event)
+      .subscribe((events: Array<Event>) => {
+        this.events = events.reverse();
+        this.changeDetectorRef.markForCheck();
+      });
+
+    this._year = event;
+  }
+
   private set events(events: Array<Event>) {
     this._events = events
   }
@@ -91,7 +103,7 @@ export class ArchivalEventsPage implements OnInit {
     this._networkStatus = networkStatus
   }
 
-  public async refresh(ev) {
+  public async refresh(ev) {console.log(this._year)
     if (this._networkStatus) await this.loadData(true, true);
     ev.detail.complete();
   }

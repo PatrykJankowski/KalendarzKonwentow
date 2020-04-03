@@ -23,6 +23,7 @@ export class FiltersComponent implements OnInit, OnChanges {
   @Input() events: Array<Event>;
 
   @Output() eventsFiltered = new EventEmitter();
+  @Output() yearChanged = new EventEmitter();
 
   public originalEvents: Array<Event>;
 
@@ -119,15 +120,9 @@ export class FiltersComponent implements OnInit, OnChanges {
       this.dateFilter = new FormControl();
       this.dateFilter.valueChanges.subscribe((date: string) => {
         this.date = date;
+        this.locations = [];
+        this.yearChanged.emit(this._date);
 
-        this.dataService.getEvents(date)
-          .subscribe((events: Array<Event>) => {
-            this.originalEvents = events.reverse();
-            this.events = this.originalEvents;
-            this.filterEvents(this.originalEvents);
-            this.locations = [];
-            this.initFilters();
-          });
       });
     }
 
@@ -192,6 +187,11 @@ export class FiltersComponent implements OnInit, OnChanges {
     if (this.enableDate && !this.date) {
       const todayDate: Date = new Date();
       originalEvents = originalEvents.filter((event: Event) => new Date(event.date_end) <= new Date(todayDate));
+
+      this.dates = [];
+      for (let year: number = this.currentYear - 1; year >= 2014; year--) {
+        this.dates.push(year);
+      }
     }
 
     if (originalEvents && originalEvents.length) {
@@ -204,10 +204,6 @@ export class FiltersComponent implements OnInit, OnChanges {
         if (this.locations.indexOf(location) === -1) {
           this.locations.push(location);
         }
-      }
-
-      for (let year: number = this.currentYear - 1; year >= 2014; year--) {
-        this.dates.push(year);
       }
 
       this.categories.sort();
