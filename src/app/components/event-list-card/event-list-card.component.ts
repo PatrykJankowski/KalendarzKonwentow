@@ -25,11 +25,11 @@ export class EventListCardComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // console.log(changes.event.currentValue.image);
     if(this.event.image.includes('http') || this.event.image === this.transparentImage) {
+
       Storage.get({key: 'img' + this.event.id}).then((image) => {
         if (image.value) {
-          this.event.image = image.value;
+          this.event.image = image.value; // todo: do not assign a variable to event object
           this.changeDetectorRef.markForCheck();
         } else if(this.networkStatus) {
           this.convertImageToBase64(this.event.image).then((dataUrl: string) => {
@@ -48,7 +48,7 @@ export class EventListCardComponent implements OnChanges {
     const blob = await response.blob();
     const result = new Promise((resolve, reject) => {
       if (blob.type === 'text/html') {
-        // this.event.image = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        // this.event.image = transparentImage;
         resolve(this.transparentImage);
       } else {
         const reader = new FileReader();

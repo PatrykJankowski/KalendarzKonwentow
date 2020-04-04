@@ -3,11 +3,10 @@ import { FormControl } from '@angular/forms';
 
 import { LoadingController, ToastController } from '@ionic/angular';
 
-import { Geolocation } from '@capacitor/core';
-
 import { Event } from '@models/event.model';
 import { DataService } from '@services/data.service';
 import { FavouriteService } from '@services/favourites.service';
+import { LocationService } from '@services/location.service';
 
 @Component({
   selector: 'app-filters',
@@ -71,10 +70,13 @@ export class FiltersComponent implements OnInit, OnChanges {
   public rangeFilter: FormControl;
   // public searchField: FormControl;
 
-  constructor(private dataService: DataService, private favouritesService: FavouriteService, public loadingController: LoadingController, public toastController: ToastController) {}
+  constructor(private dataService: DataService, private favouritesService: FavouriteService, public loadingController: LoadingController, public toastController: ToastController, private locationService: LocationService) {}
 
   public ngOnInit() {
-    this.getLocation();
+    this.locationService.getLocation().then((coordinates) => {
+      this.lat = coordinates[0];
+      this.long = coordinates[1];
+    });
 
     this.originalEvents = this.events;
     this.noColumns = this.calculateNoColumns();
@@ -95,9 +97,10 @@ export class FiltersComponent implements OnInit, OnChanges {
         this.present().then(() => {
           if(!range) range = 9999999;
           this.range = range;
-
           if (range < 9999999) { // jesli nie wszystkie
-            this.getLocation().then(() => {
+            this.locationService.getLocation().then((coordinates) => {
+              this.lat = coordinates[0];
+              this.long = coordinates[1];
               this.filterEvents(this.originalEvents);
               this.dismiss();
             }).catch(() => {
@@ -122,7 +125,6 @@ export class FiltersComponent implements OnInit, OnChanges {
         this.date = date;
         this.locations = [];
         this.yearChanged.emit(this._date);
-
       });
     }
 
@@ -263,12 +265,6 @@ export class FiltersComponent implements OnInit, OnChanges {
     return 12/noFilters;
   }
 
-  private async getLocation() {
-    const position = await Geolocation.getCurrentPosition();
-    this.lat = position.coords.latitude;
-    this.long = position.coords.longitude;
-  }
-
   private filterByLocation(event): boolean {
     return event.location.indexOf(this._location) > -1;
   }
@@ -294,11 +290,11 @@ export class FiltersComponent implements OnInit, OnChanges {
   }
 
   private filterByFutureDate(eventDate, date, filterOn): boolean {
-    return filterOn && new Date(eventDate) >= date
+    return filterOn && new Date(eventDate).setHours(0,0,0,0) >= date.setHours(0,0,0,0)
   }
 
   private filterByPastDate(eventDate, date, filterOn): boolean {
-    return filterOn && new Date(eventDate) <= new Date(date)
+    return filterOn && new Date(eventDate).setHours(0,0,0,0) < new Date(date).setHours(0,0,0,0)
   }
 
   private set category(category: string) {

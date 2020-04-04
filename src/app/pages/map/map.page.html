@@ -1,0 +1,27 @@
+<ion-header [translucent]="true">
+  <ion-title class="header__title">
+    <img src="assets/logo.png" alt="Konwenty Południowe" class="header__logo">
+    <img *ngIf="!networkStatus" src="/assets/offline.png" class="header__offline">
+  </ion-title>
+  <!--<app-filters [events]="_events" (eventsFiltered)="filteredEvents = $event" [enableVoivodeship]="true" [enableInRange]="true"></app-filters>-->
+</ion-header>
+
+<ion-content>
+  <agm-map class="map" [latitude]=lat [longitude]=long [zoom]=zoom [disableDefaultUI]="false">
+    <agm-marker *ngFor="let event of events"
+                [zIndex]="10"
+                [openInfoWindow]=true
+                [markerClickable]=true
+                [latitude]=event.lat
+                [longitude]=event.long
+                [visible]="event.cancelled == 0">
+
+      <agm-info-window [latitude]="event.lat" [longitude]="event.long">
+        <div class="map__info map__info--bold">{{ event.name }}</div>
+        <div class="map__info" *ngIf="event.date_end <= event.date_begin">{{ event.date_begin | date: "dd.MM.y" }}</div>
+        <div class="map__info" *ngIf="event.date_end > event.date_begin">{{ event.date_begin | date: "dd.MM" }} – {{ event.date_end | date: "dd.MM.y" }}</div>
+        <div class="map__info map__info--url" [routerLink]="'/event-details/' + event.id">Przejdź do wydarzenia</div>
+      </agm-info-window>
+    </agm-marker>
+  </agm-map>
+</ion-content>
