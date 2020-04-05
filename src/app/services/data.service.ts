@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { Plugins } from '@capacitor/core';
-import { from, Observable, of } from 'rxjs';
+import { from, Observable, of, zip } from 'rxjs';
 import { catchError, flatMap, isEmpty, map, mergeMap, tap } from 'rxjs/operators';
 
 import { Event, EventDetails } from '@models/event.model';
@@ -36,58 +36,31 @@ export class DataService {
     return await result;
   }
 
-  private async storageData(year) {
-    const storageData = await this.storageService.getLocalData(`events${year}`);
-    return storageData.length
-  }
 
 
-
-  private value<T>(key:string, value:T):Observable<any>{
-    return from(Storage.set({key, value: JSON.stringify({value})}))
-      .pipe(map(val => val));
-  }
-
-
-  
   public getEvents(year: string = '', refreshData = true): Observable<any> {
-    if (!refreshData) {
-      const eventsFromCache = from(this.storageService.getLocalData(`events${year}`));
-      if (eventsFromCache) {
-        return eventsFromCache;
-      }
-    }
 
     let obs = this.http.get(`${this.API_URL}?year=${year}`);
+    let obs2 = from(this.storageService.getLocalData(`events${year}`));
 
-    return from(this.storageService.getLocalData(`events${year}`)).pipe(
-      map((events) => {
-        if(events) {
-          return events
-        }
-        return []
-      }),
-      flatMap((data) => {
-
-        console.log('data', data)
-
-        if (data.length) {console.log('22222222')
-          return of(data);
+    return zip(obs, obs2).pipe(
+      flatMap((val: [Array<Event>, Array<Event>]) => {
+        if(val[0].length === val[1].length) {
+          return of(val[1])
         } else {
-          console.log('333333')
           return obs.pipe(tap((x: Array<Event>) => {
-
-            console.log(x.length, data.length)
-
-              this.setImages(x).then((eventsWithImages) => {
-                return this.storageService.setLocalData(`events${year}`, eventsWithImages);
-              })
-
-
+            this.setImages(x).then((eventsWithImages) => {
+              return this.storageService.setLocalData(`events${year}`, eventsWithImages);
+            })
           }));
         }
+      }),
+      catchError(() => {
+        return this.storageService.getLocalData(`events${year}`).catch(() => []);
       })
     );
+
+
 
 /*    return this.http.get(`${this.API_URL}?year=${year}`)
       .pipe(

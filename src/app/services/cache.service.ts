@@ -1,3 +1,4 @@
+/*
 import {Injectable} from '@angular/core';
 
 import {isDate, isEmpty, isNumber, isString} from 'lodash';
@@ -9,16 +10,16 @@ import { flatMap, map } from 'rxjs/operators';
 @Injectable()
 export class LocalCacheService {
 
-  /**
+  /!**
    * Default expiry in seconds
    *
    * @type {number}
-   */
+   *!/
   defaultExpires = 86400; // 24Hrs
 
   constructor(private localstorage: LocalStorageService) {}
 
-  /**
+  /!**
    * Cache or use result from observable
    *
    * If cache key does not exist or is expired, observable supplied in argument is returned and result cached
@@ -27,7 +28,7 @@ export class LocalCacheService {
    * @param observable
    * @param expires
    * @returns {Observable<T>}
-   */
+   *!/
   public observable<T>(key: string, observable: Observable<T>, expires:number = this.defaultExpires): Observable<any> {
     // First fetch the item from localstorage (even though it may not exist)
     return this.localstorage.getItem(key).pipe(
@@ -50,14 +51,14 @@ export class LocalCacheService {
     )
   }
 
-  /**
+  /!**
    * Cache supplied value until expiry
    *
    * @param key
    * @param value
    * @param expires
    * @returns {Observable<T>}
-   */
+   *!/
   value<T>(key:string, value:T, expires:number|string|Date = this.defaultExpires):Observable<T>{
     const _expires:Date = this.sanitizeAndGenerateDateExpiry(expires);
 
@@ -67,20 +68,20 @@ export class LocalCacheService {
     }).map(val => val.value);
   }
 
-  /**
+  /!**
    *
    * @param key
    * @returns {Observable<null>}
-   */
+   *!/
   expire(key:string):Observable<any>{
     return this.localstorage.removeItem(key);
   }
 
-  /**
+  /!**
    *
    * @param expires
    * @returns {Date}
-   */
+   *!/
   private sanitizeAndGenerateDateExpiry(expires:string|number|Date):Date{
     const expiryDate:Date = this.expiryToDate(expires);
 
@@ -92,11 +93,11 @@ export class LocalCacheService {
     return expiryDate;
   }
 
-  /**
+  /!**
    *
    * @param expires
    * @returns {Date}
-   */
+   *!/
   private expiryToDate(expires:number|string|Date):Date{
     if(isNumber(expires)){
       return new Date(Date.now() + Math.abs(expires)*1000);
@@ -112,10 +113,11 @@ export class LocalCacheService {
   }
 }
 
-/**
+/!**
  * Cache storage record interface
- */
+ *!/
 interface CacheStorageRecord {
   expires: Date,
   value: any
 }
+*/
