@@ -25,22 +25,27 @@ export class EventListCardComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(this.event.image.includes('http') || this.event.image === this.transparentImage) {
+/*    if(this.event.image.includes('http') || this.event.image === this.transparentImage) {
 
       Storage.get({key: 'img' + this.event.id}).then((image) => {
         if (image.value) {
           this.event.image = image.value; // todo: do not assign a var to event object
           this.changeDetectorRef.markForCheck();
         } else if(this.networkStatus) {
+
+
+
           this.convertImageToBase64(this.event.image).then((dataUrl: string) => {
             Storage.set({key: 'img' + this.event.id, value: dataUrl});
           });
+
+
           this.changeDetectorRef.markForCheck();
         } else {
           this.event.image = this.transparentImage;
         }
       });
-    }
+    }*/
   }
 
   private async convertImageToBase64(url): Promise<any> {

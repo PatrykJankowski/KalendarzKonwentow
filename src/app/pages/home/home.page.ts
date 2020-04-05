@@ -31,6 +31,7 @@ export class HomePage implements OnInit {
 
   public ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events;
+    console.log('asd', this._events)
 
     this.networkService.getCurrentNetworkStatus().then((networkStatus: boolean) => {
       this.networkStatus = networkStatus;

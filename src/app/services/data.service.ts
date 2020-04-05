@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Plugins } from '@capacitor/core';
+import { from, Observable, of } from 'rxjs';
+import { catchError, flatMap, isEmpty, map, mergeMap, tap } from 'rxjs/operators';
 
 import { Event, EventDetails } from '@models/event.model';
 import { NetworkService } from '@services/network.service';
 import { StorageService } from '@services/storage.service';
-
+const { Storage } = Plugins;
 @Injectable({
   providedIn: 'root'
 })
@@ -17,19 +18,83 @@ export class DataService {
 
   constructor(private http: HttpClient, private networkService: NetworkService, private storageService: StorageService) {}
 
-  public getEvents(year: string = '', refreshData = true): Observable<Event[]> {
+  private async convertImageToBase64(url): Promise<any> {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const result = new Promise((resolve, reject) => {
+      if (blob.type === 'text/html') {
+        // this.event.image = transparentImage;
+        resolve('');
+      } else {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = () => reject;
+        reader.readAsDataURL(blob);
+      }
+    });
+
+    return await result;
+  }
+
+  private async storageData(year) {
+    const storageData = await this.storageService.getLocalData(`events${year}`);
+    return storageData.length
+  }
+
+
+
+  private value<T>(key:string, value:T):Observable<any>{
+    return from(Storage.set({key, value: JSON.stringify({value})}))
+      .pipe(map(val => val));
+  }
+
+
+  
+  public getEvents(year: string = '', refreshData = true): Observable<any> {
     if (!refreshData) {
-      const eventsFromCache = this.responseCache.get(URL);
+      const eventsFromCache = from(this.storageService.getLocalData(`events${year}`));
       if (eventsFromCache) {
-        return of(eventsFromCache);
+        return eventsFromCache;
       }
     }
 
-    return this.http.get(`${this.API_URL}?year=${year}`)
+    let obs = this.http.get(`${this.API_URL}?year=${year}`);
+
+    return from(this.storageService.getLocalData(`events${year}`)).pipe(
+      map((events) => {
+        if(events) {
+          return events
+        }
+        return []
+      }),
+      flatMap((data) => {
+
+        console.log('data', data)
+
+        if (data.length) {console.log('22222222')
+          return of(data);
+        } else {
+          console.log('333333')
+          return obs.pipe(tap((x: Array<Event>) => {
+
+            console.log(x.length, data.length)
+
+              this.setImages(x).then((eventsWithImages) => {
+                return this.storageService.setLocalData(`events${year}`, eventsWithImages);
+              })
+
+
+          }));
+        }
+      })
+    );
+
+/*    return this.http.get(`${this.API_URL}?year=${year}`)
       .pipe(
-        tap((event: Event) => {
-          this.storageService.setLocalData(`events${year}`, event);
-          this.responseCache.set(URL, event)
+        tap((events: Array<Event>) => {
+          this.setImages(events).then((eventsWithImages) => {
+            return this.storageService.setLocalData(`events${year}`, eventsWithImages);
+          })
         }),
         catchError(() => {
           return this.networkService.getCurrentNetworkStatus().then(connectionStatus => {
@@ -38,13 +103,34 @@ export class DataService {
             }
           });
         })
-      );
+      );*/
   }
 
-  public getEventDetails(id: number): Observable<EventDetails[]> {
+  private async setImages(events) {
+    for (const event of events) {
+      await this.convertImageToBase64(event.image).then((img) => {
+        event.image = img;
+      })
+    }
+    return events
+  }
+
+  public getEventDetails(id: number, refreshData = true): Observable<EventDetails[]> {
+    if (!refreshData) {
+      const eventsFromCache = from(this.storageService.getLocalData(`event-details-${id}`));
+      if (eventsFromCache) {
+        console.log(eventsFromCache)
+        return eventsFromCache;
+      }
+    }
+
     return this.http.get(`${this.API_URL}?id=${id}`)
       .pipe(
-        tap((eventDetails: Event) => this.storageService.setLocalData(`event-details-${id}`, eventDetails)),
+        tap((eventDetails: Event) => {
+          this.setImages(eventDetails).then((eventWithImage) => {
+            return this.storageService.setLocalData(`event-details-${id}`, eventWithImage)
+          })
+        }),
         catchError(() => {
           return this.networkService.getCurrentNetworkStatus().then(connectionStatus => {
             if (!connectionStatus) {

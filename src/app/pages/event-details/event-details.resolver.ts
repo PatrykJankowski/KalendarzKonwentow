@@ -7,9 +7,14 @@ import { DataService } from '@services/data.service';
   providedIn: 'root'
 })
 export class EventDetailsResolver implements Resolve<any> {
+  private refreshFlag: boolean = true;
+
   constructor(private dataService: DataService) {}
 
   public resolve(activatedRouteSnapshot: ActivatedRouteSnapshot): any {
-    return this.dataService.getEventDetails(activatedRouteSnapshot.params.id);
+    const events = this.dataService.getEventDetails(activatedRouteSnapshot.params.id, this.refreshFlag);
+    this.refreshFlag ? this.refreshFlag = false : '';
+
+    return events;
   }
 }

@@ -20,6 +20,7 @@ import { HomeRouterModule } from './home.router';
     FiltersComponentModule,
     HomeRouterModule,
   ],
+
   declarations: [HomePage]
 })
 export class HomePageModule {}
