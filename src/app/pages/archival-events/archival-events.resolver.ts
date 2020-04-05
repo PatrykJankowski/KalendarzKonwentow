@@ -7,14 +7,10 @@ import { DataService } from '@services/data.service';
   providedIn: 'root'
 })
 export class ArchivalEventsResolver implements Resolve<any> {
-  private refreshFlag: boolean = true;
 
   constructor(private dataService: DataService) {}
 
   public resolve(): any {
-    const events = this.dataService.getEvents(new Date().getFullYear().toString(), this.refreshFlag);
-    this.refreshFlag ? this.refreshFlag = false : '';
-
-    return events;
+    return this.dataService.getEvents(new Date().getFullYear().toString());
   }
 }

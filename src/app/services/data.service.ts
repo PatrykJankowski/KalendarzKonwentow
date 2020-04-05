@@ -13,21 +13,19 @@ import { StorageService } from '@services/storage.service';
 })
 export class DataService {
   private readonly API_URL: string = 'https://konwenty-poludniowe.pl/api.php';
-  public responseCache = new Map();
 
   constructor(private http: HttpClient, private networkService: NetworkService, private storageService: StorageService) {}
 
-  public getEvents(year: string = '', refreshData = true): Observable<any> {
+  public getEvents(year: string = ''): Observable<any> {
+    const apiRequest = this.http.get(`${this.API_URL}?year=${year}`);
+    const storageRequest = from(this.storageService.getLocalData(`events${year}`));
 
-    let obs = this.http.get(`${this.API_URL}?year=${year}`);
-    let obs2 = from(this.storageService.getLocalData(`events${year}`));
-
-    return zip(obs, obs2).pipe(
-      flatMap((val: [Array<Event>, Array<Event>]) => {
-        if(val[0].length === val[1].length) {
-          return of(val[1])
+    return zip(apiRequest, storageRequest).pipe(
+      flatMap((eventsArray: [Array<Event>, Array<Event>]) => {
+        if(eventsArray[0].length === eventsArray[1].length) {
+          return of(eventsArray[1])
         } else {
-          return obs.pipe(tap((events: Array<Event>) => {
+          return apiRequest.pipe(tap((events: Array<Event>) => {
             this.setImages(events).then((eventsWithImages) => {
               this.storageService.setLocalData(`events${year}`, eventsWithImages);
             })
@@ -40,22 +38,19 @@ export class DataService {
     );
   }
 
-  public getEventDetails(id: number, refreshData = true): Observable<EventDetails[]> {
-
-    let obs = this.http.get(`${this.API_URL}?id=${id}`);
+  public getEventDetails(id: number): Observable<EventDetails[]> {
+    const storageRequest = this.http.get(`${this.API_URL}?id=${id}`);
 
     return from(this.storageService.getLocalData(`event-details-${id}`)).pipe(
       map((val) => {
-        if (val) {
-          return val;
-        }
+        if (val) return val;
         return [];
       }),
       flatMap((val) => {
         if (val.length) {
           return of(val);
         } else {
-          return obs.pipe(tap((eventDetails: Array<Event>) => {
+          return storageRequest.pipe(tap((eventDetails: Array<Event>) => {
             this.setImages(eventDetails).then((eventWithImage) => {
               return this.storageService.setLocalData(`event-details-${id}`, eventWithImage);
             })
@@ -92,6 +87,6 @@ export class DataService {
         this.storageService.setLocalData(`img-${event.id}`, img)
       })
     }
-    return events
+    return events;
   }
 }

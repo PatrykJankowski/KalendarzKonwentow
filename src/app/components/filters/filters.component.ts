@@ -7,6 +7,7 @@ import { Event } from '@models/event.model';
 import { DataService } from '@services/data.service';
 import { FavouriteService } from '@services/favourites.service';
 import { LocationService } from '@services/location.service';
+import { LoadingService } from '@services/loader.service';
 
 @Component({
   selector: 'app-filters',
@@ -35,18 +36,18 @@ export class FiltersComponent implements OnInit, OnChanges {
     'kujawsko-pomorskie',
     'lubelskie',
     'lubuskie',
-    'mazowieckie',
+    'łódzkie',
     'małopolskie',
+    'mazowieckie',
     'opolskie',
     'podkarpackie',
     'podlaskie',
     'pomorskie',
+    'śląskie',
+    'świętokrzyskie',
     'warmińsko-mazurskie',
     'wielkopolskie',
-    'zachodniopomorskie',
-    'łódzkie',
-    'śląskie',
-    'świętokrzyskie'
+    'zachodniopomorskie'
   ];
   public locations: Array<string> = [];
   public dates: Array<number> = [];
@@ -70,7 +71,7 @@ export class FiltersComponent implements OnInit, OnChanges {
   public rangeFilter: FormControl;
   // public searchField: FormControl;
 
-  constructor(private dataService: DataService, private favouritesService: FavouriteService, public loadingController: LoadingController, public toastController: ToastController, private locationService: LocationService) {}
+  constructor(private dataService: DataService, private favouritesService: FavouriteService, public loadingService: LoadingService, public toastController: ToastController, private locationService: LocationService) {}
 
   public ngOnInit() {
     this.locationService.getLocation().then((coordinates) => {
@@ -94,7 +95,7 @@ export class FiltersComponent implements OnInit, OnChanges {
     if(this.enableInRange) {
       this.rangeFilter = new FormControl();
       this.rangeFilter.valueChanges.subscribe((range: number) => {
-        this.present().then(() => {
+        this.loadingService.present().then(() => {
           if(!range) range = 9999999;
           this.range = range;
           if (range < 9999999) { // jesli nie wszystkie
@@ -102,9 +103,9 @@ export class FiltersComponent implements OnInit, OnChanges {
               this.lat = coordinates[0];
               this.long = coordinates[1];
               this.filterEvents(this.originalEvents);
-              this.dismiss();
+              this.loadingService.dismiss();
             }).catch(() => {
-              this.dismiss();
+              this.loadingService.dismiss();
               this.toastController.create({
                 message: '<center>Nie udało się zlokalizować Twojego urządzenia.<br>Sprawdź ustawienia GPS i spróbuj ponownie.</center>',
                 position: 'middle',
@@ -113,7 +114,7 @@ export class FiltersComponent implements OnInit, OnChanges {
             });
           } else {
             this.filterEvents(this.originalEvents);
-            this.dismiss();
+            this.loadingService.dismiss();
           }
         });
       });
@@ -160,25 +161,6 @@ export class FiltersComponent implements OnInit, OnChanges {
         this.filterEvents(this.events);
       }
     }
-  }
-
-  // do serwisu
-  private async present() {
-    this.isLoading = true;
-    return await this.loadingController.create({
-      message: 'Wyszukiwanie wydarzeń w pobliżu...',
-    }).then(a => {
-      a.present().then(() => {
-        if (!this.isLoading) {
-          a.dismiss().then();
-        }
-      });
-    });
-  }
-
-  private async dismiss() {
-    this.isLoading = false;
-    return await this.loadingController.dismiss().then();
   }
 
   private initFilters(): void {

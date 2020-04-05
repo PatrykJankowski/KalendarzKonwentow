@@ -8,7 +8,6 @@ import { DataService } from '@services/data.service';
 import { FavouriteService } from '@services/favourites.service';
 import { NetworkService } from '@services/network.service';
 import { StorageService } from '@services/storage.service';
-import { LoadingService } from '@services/loader.service';
 
 @Component({
   selector: 'app-home',
@@ -28,8 +27,7 @@ export class HomePage implements OnInit {
     private networkService: NetworkService,
     private storageService: StorageService,
     private changeDetectorRef: ChangeDetectorRef,
-    private favouritesService: FavouriteService,
-    private loadingService: LoadingService) {}
+    private favouritesService: FavouriteService) {}
 
   public ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events;
@@ -41,7 +39,7 @@ export class HomePage implements OnInit {
 
     Network.addListener('networkStatusChange', (networkStatus: NetworkStatus) => {
       this.networkStatus = networkStatus.connected;
-      if (networkStatus.connected) this.loadData(false);
+      if (networkStatus.connected) this.loadData();
       this.changeDetectorRef.detectChanges();
     });
 
@@ -49,9 +47,7 @@ export class HomePage implements OnInit {
       this.changeDetectorRef.markForCheck();
     });
   }
-
-
-
+  
   public ionViewWillEnter(): void {
     // Remove dropdown arrow; hope for better solution in future Ionic version
     const ionSelects: NodeListOf<HTMLIonSelectElement> = document.querySelectorAll('ion-select');
@@ -63,17 +59,15 @@ export class HomePage implements OnInit {
     });
   }
 
-  private async loadData(clearStorage: boolean) {
-    this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
-     // if (!this._events.length || this._events.length !== events.length) {
-        this.events = events;
-        this.changeDetectorRef.markForCheck();
-      // }
+  private async loadData() {
+    this.dataService.getEvents('').subscribe((events: Array<Event>) => {
+      this.events = events;
+      this.changeDetectorRef.markForCheck();
     });
   }
 
   public async refresh(ev) {
-    if (this._networkStatus) await this.loadData(true);
+    if (this._networkStatus) await this.loadData();
     ev.detail.complete();
   }
 
