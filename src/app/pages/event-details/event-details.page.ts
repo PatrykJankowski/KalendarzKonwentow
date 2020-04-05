@@ -30,7 +30,14 @@ export class EventDetailsPage implements OnInit{
               ) {}
 
   public ngOnInit(): void {
-
+/*    Storage.get({key: 'img' + this.activatedRoute.snapshot.params.id}).then((image) => {
+      if (image.value) {
+        this.image = image.value;
+        this.changeDetectorRef.markForCheck();
+      } else {
+        this.image = '/assets/no-image.jpg';
+      }
+    });*/
   }
 
   public addToCalendar(): void {

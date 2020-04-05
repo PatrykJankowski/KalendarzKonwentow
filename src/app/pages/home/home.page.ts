@@ -8,6 +8,7 @@ import { DataService } from '@services/data.service';
 import { FavouriteService } from '@services/favourites.service';
 import { NetworkService } from '@services/network.service';
 import { StorageService } from '@services/storage.service';
+import { LoadingService } from '@services/loader.service';
 
 @Component({
   selector: 'app-home',
@@ -27,11 +28,11 @@ export class HomePage implements OnInit {
     private networkService: NetworkService,
     private storageService: StorageService,
     private changeDetectorRef: ChangeDetectorRef,
-    private favouritesService: FavouriteService) {}
+    private favouritesService: FavouriteService,
+    private loadingService: LoadingService) {}
 
   public ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events;
-    console.log('asd', this._events)
 
     this.networkService.getCurrentNetworkStatus().then((networkStatus: boolean) => {
       this.networkStatus = networkStatus;
@@ -49,8 +50,6 @@ export class HomePage implements OnInit {
     });
   }
 
-
-
   public ionViewWillEnter(): void {
     // Remove dropdown arrow; hope for better solution in future Ionic version
     const ionSelects: NodeListOf<HTMLIonSelectElement> = document.querySelectorAll('ion-select');
@@ -60,8 +59,6 @@ export class HomePage implements OnInit {
           element.setAttribute('style', 'display: none');
         });
     });
-
-    console.log(this.activatedRoute.snapshot.data.events);
   }
 
   private async loadData(clearStorage: boolean) {

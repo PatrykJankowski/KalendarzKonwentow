@@ -13,7 +13,7 @@
           <ion-col size="5">
             <ion-thumbnail class="event-card__thumb">
               <!--<ion-img [src]="event.image" (ionError)="loadDefaultImage($event)" alt="Image - {{ event.name}}"></ion-img>-->
-              <img [src]="sanitizer.bypassSecurityTrustResourceUrl(event.image)" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'" crossorigin="anonymous">
+              <img [src]="sanitizer.bypassSecurityTrustResourceUrl(event.image)"  crossorigin="anonymous">
             </ion-thumbnail>
           </ion-col>
           <ion-col size="7" class="event-card__description ion-no-padding">

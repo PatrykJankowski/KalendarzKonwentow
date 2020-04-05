@@ -6,6 +6,7 @@ import { Network, NetworkStatus } from '@capacitor/core';
 import { Event } from '@models/event.model';
 import { DataService } from '@services/data.service';
 import { FavouriteService } from '@services/favourites.service';
+import { LoadingService } from '@services/loader.service';
 import { NetworkService } from '@services/network.service';
 import { StorageService } from '@services/storage.service';
 
@@ -27,8 +28,8 @@ export class ArchivalEventsPage implements OnInit {
               private dataService: DataService,
               private networkService: NetworkService,
               private storageService: StorageService,
-              private favouritesService: FavouriteService
-  ) {}
+              private favouritesService: FavouriteService,
+              private loadingService: LoadingService) {}
 
   public ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events.reverse();
@@ -85,13 +86,11 @@ export class ArchivalEventsPage implements OnInit {
   }
 
   public set year(event) {
-
     this.dataService.getEvents(event)
       .subscribe((events: Array<Event>) => {
         this.events = events.reverse();
         this.changeDetectorRef.markForCheck();
       });
-
     this._year = event;
   }
 
@@ -103,7 +102,7 @@ export class ArchivalEventsPage implements OnInit {
     this._networkStatus = networkStatus
   }
 
-  public async refresh(ev) {console.log(this._year)
+  public async refresh(ev) {
     if (this._networkStatus) await this.loadData(true, true);
     ev.detail.complete();
   }
