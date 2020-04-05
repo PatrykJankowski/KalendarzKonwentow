@@ -7,7 +7,7 @@
 </ion-header>
 
 <ion-content>
-  <agm-map class="map" [latitude]=lat [longitude]=long [zoom]=zoom [disableDefaultUI]="false">
+  <agm-map class="map" [latitude]=getLat() [longitude]=getLong() [zoom]=11 [disableDefaultUI]="false">
     <agm-marker *ngFor="let event of events"
                 [zIndex]="10"
                 [openInfoWindow]=true

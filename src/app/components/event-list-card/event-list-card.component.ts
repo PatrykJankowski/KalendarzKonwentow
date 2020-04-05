@@ -29,7 +29,7 @@ export class EventListCardComponent implements OnChanges {
 
       Storage.get({key: 'img' + this.event.id}).then((image) => {
         if (image.value) {
-          this.event.image = image.value; // todo: do not assign a variable to event object
+          this.event.image = image.value; // todo: do not assign a var to event object
           this.changeDetectorRef.markForCheck();
         } else if(this.networkStatus) {
           this.convertImageToBase64(this.event.image).then((dataUrl: string) => {

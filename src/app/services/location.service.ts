@@ -6,8 +6,8 @@ import { Geolocation, Plugins } from '@capacitor/core';
   providedIn: 'root'
 })
 export class LocationService {
-  public lat: number;
-  public long: number;
+  public lat: number = 52;
+  public long: number = 19;
 
   constructor() {}
 
@@ -17,5 +17,13 @@ export class LocationService {
     this.long = position.coords.longitude;
 
     return [this.lat, this.long]
+  }
+
+  public getLat() {
+    return this.lat;
+  }
+
+  public getLong() {
+    return this.long;
   }
 }

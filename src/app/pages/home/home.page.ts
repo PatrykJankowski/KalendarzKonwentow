@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { Network, NetworkStatus, Plugins } from '@capacitor/core';
+import { Network, NetworkStatus } from '@capacitor/core';
 
 import { Event } from '@models/event.model';
 import { DataService } from '@services/data.service';
