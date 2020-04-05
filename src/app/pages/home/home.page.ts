@@ -50,6 +50,8 @@ export class HomePage implements OnInit {
     });
   }
 
+
+
   public ionViewWillEnter(): void {
     // Remove dropdown arrow; hope for better solution in future Ionic version
     const ionSelects: NodeListOf<HTMLIonSelectElement> = document.querySelectorAll('ion-select');
@@ -63,16 +65,10 @@ export class HomePage implements OnInit {
 
   private async loadData(clearStorage: boolean) {
     this.dataService.getEvents('', true).subscribe((events: Array<Event>) => {
-      if(clearStorage) {
-        this.storageService.removeCachedImages()
-          .then(() => {
-            this.events = events;
-            this.changeDetectorRef.markForCheck();
-          });
-      } else if (!this._events.length || this._events.length !== events.length) {
+     // if (!this._events.length || this._events.length !== events.length) {
         this.events = events;
         this.changeDetectorRef.markForCheck();
-      }
+      // }
     });
   }
 

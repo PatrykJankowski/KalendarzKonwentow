@@ -63,16 +63,10 @@ export class ArchivalEventsPage implements OnInit {
   private async loadData(clearStorage: boolean, isEventsListEmpty: boolean) {
     if(isEventsListEmpty) {
       this.dataService.getEvents(this._year, true).subscribe((events: Array<Event>) => {
-        if(clearStorage) {
-          this.storageService.removeCachedImages()
-            .then(() => {
-              this.events = events.reverse();
-              this.changeDetectorRef.markForCheck();
-            });
-        } else if (this.events.length !== events.length) {
+        // if (this.events.length !== events.length) {
           this.events = events.reverse();
           this.changeDetectorRef.markForCheck();
-        }
+        // }
       });
     }
   }

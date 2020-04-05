@@ -1,10 +1,11 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { Plugins } from '@capacitor/core';
 
 import { Event } from '@models/event.model';
 import { FavouriteService } from '@services/favourites.service';
+import { StorageService } from '@services/storage.service';
 
 const {Storage} = Plugins;
 
@@ -14,17 +15,41 @@ const {Storage} = Plugins;
   styleUrls: ['./event-list-card.component.scss'],
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EventListCardComponent implements OnChanges {
+export class EventListCardComponent implements OnChanges, OnInit {
   @Input() event: Event;
   @Input() networkStatus: boolean = true;
-  
+
+  image;
+
   private transparentImage: string = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-  constructor(private changeDetectorRef: ChangeDetectorRef, public favouritesService: FavouriteService, public sanitizer: DomSanitizer) {
+  constructor(private changeDetectorRef: ChangeDetectorRef, public favouritesService: FavouriteService, public sanitizer: DomSanitizer, private storageService: StorageService) {
     this.changeDetectorRef.markForCheck();
+    //this.image(1128).then((a) => console.log(a))
   }
 
+  ngOnInit() {
+    console.log(this.event.image)
+    this.image = this.event.image;
+    this.changeDetectorRef.markForCheck();
+    this.changeDetectorRef.detectChanges()
+  }
+
+  /*public async image(id) {
+    return await this.storageService.getLocalData(`img-${id}`);
+  }*/
+
+
   ngOnChanges(changes: SimpleChanges) {
+    Storage.get({key: 'img-' + this.event.id}).then((image) => {
+      if (image.value) {
+        this.image = JSON.parse(image.value).data;
+        this.changeDetectorRef.markForCheck()
+      } else {
+        this.image = this.event.image;
+        this.changeDetectorRef.markForCheck()
+      }
+    });
 /*    if(this.event.image.includes('http') || this.event.image === this.transparentImage) {
 
       Storage.get({key: 'img' + this.event.id}).then((image) => {

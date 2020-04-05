@@ -29,7 +29,7 @@ export class DataService {
         } else {
           return obs.pipe(tap((events: Array<Event>) => {
             this.setImages(events).then((eventsWithImages) => {
-              return this.storageService.setLocalData(`events${year}`, eventsWithImages);
+              this.storageService.setLocalData(`events${year}`, eventsWithImages);
             })
           }))
         }
@@ -89,7 +89,7 @@ export class DataService {
   private async setImages(events) {
     for (const event of events) {
       await this.convertImageToBase64(event.image).then((img) => {
-        event.image = img;
+        this.storageService.setLocalData(`img-${event.id}`, img)
       })
     }
     return events
