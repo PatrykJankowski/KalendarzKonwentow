@@ -12,11 +12,11 @@
                 [zIndex]="10"
                 [openInfoWindow]=true
                 [markerClickable]=true
-                [latitude]=event.lat
-                [longitude]=event.long
+                [latitude]=1*event.lat
+                [longitude]=1*event.long
                 [visible]="event.cancelled == 0">
 
-      <agm-info-window [latitude]="event.lat" [longitude]="event.long">
+      <agm-info-window>
         <div class="map__info map__info--bold">{{ event.name }}</div>
         <div class="map__info" *ngIf="event.date_end <= event.date_begin">{{ event.date_begin | date: "dd.MM.y" }}</div>
         <div class="map__info" *ngIf="event.date_end > event.date_begin">{{ event.date_begin | date: "dd.MM" }} – {{ event.date_end | date: "dd.MM.y" }}</div>

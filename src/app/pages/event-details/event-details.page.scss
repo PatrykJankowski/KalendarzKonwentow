@@ -108,12 +108,12 @@
   }
 
   &__map {
+    display: flex;
     width: 100%;
-    height: 240px;
+    height: 200px;
     margin-top: 5px;
   }
 }
-
 
 ion-title {
   padding-left: 0;
