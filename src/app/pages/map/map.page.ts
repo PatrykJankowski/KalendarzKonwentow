@@ -14,7 +14,7 @@ export class MapPage implements OnInit {
   public events: Array<Event> = [];
   public networkStatus: boolean;
 
-  // public zoom: number = 6;
+  public zoom: number = 6;
 
   constructor(private activatedRoute: ActivatedRoute, private networkService: NetworkService, private changeDetectorRef: ChangeDetectorRef, private locationService: LocationService) { }
 
@@ -28,6 +28,8 @@ export class MapPage implements OnInit {
   }
 
   public getLat() {
+    if (this.locationService.getLat() !== 52) this.zoom = 11;
+    this.changeDetectorRef.markForCheck();
     return this.locationService.getLat();
   }
 

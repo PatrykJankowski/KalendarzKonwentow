@@ -20,7 +20,7 @@ const { Storage } = Plugins;
 })
 export class EventDetailsPage implements OnInit{
   public eventDetails: EventDetails = this.activatedRoute.snapshot.data.eventDetails[0];
-  public image: string;
+  public image: string = this.eventDetails.image;
 
   constructor(private activatedRoute: ActivatedRoute,
               private changeDetectorRef: ChangeDetectorRef,
@@ -33,14 +33,14 @@ export class EventDetailsPage implements OnInit{
     Storage.get({key: 'img-' + this.activatedRoute.snapshot.params.id}).then((image) => {
       if (image.value) {
         this.image = JSON.parse(image.value).data;
-        this.changeDetectorRef.markForCheck();
+        this.changeDetectorRef.detectChanges()
       } else {
-        this.image = '/assets/no-image.jpg';
+        this.image = this.eventDetails.image;
       }
     });
   }
 
-  ionViewWillEnter() {
+/*  ionViewWillEnter() {
     Storage.get({key: 'img-' + this.activatedRoute.snapshot.params.id}).then((image) => {
       if (image.value) {
         this.image = JSON.parse(image.value).data;
@@ -49,7 +49,7 @@ export class EventDetailsPage implements OnInit{
         this.image = '/assets/no-image.jpg';
       }
     });
-  }
+  }*/
 
   public addToCalendar(): void {
     this.calendar.createEventInteractively(
