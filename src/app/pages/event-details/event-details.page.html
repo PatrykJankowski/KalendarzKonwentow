@@ -77,8 +77,8 @@
 
       <ng-container *ngIf="eventDetails.lat && eventDetails.long">
         <h4 class="event-details__caption">Mapa:</h4>
-        <agm-map class="event-details__map" [latitude]="1*eventDetails.lat" [longitude]="1*eventDetails.long" [zoom]=11 [disableDefaultUI]="false">
-          <agm-marker [zIndex]="10" [latitude]="1*eventDetails.lat" [longitude]="1*eventDetails.long"></agm-marker>
+        <agm-map class="event-details__map" [latitude]="lat" [longitude]="long" [zoom]=11 [disableDefaultUI]="false">
+          <agm-marker [zIndex]="10" [latitude]="eventDetails.lat" [longitude]="eventDetails.long"></agm-marker>
         </agm-map>
       </ng-container>
 

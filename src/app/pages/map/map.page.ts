@@ -27,13 +27,13 @@ export class MapPage implements OnInit {
     });
   }
 
-  public getLat() {
+  public get lat() {
     if (this.locationService.getLat() !== 52) this.zoom = 11;
     this.changeDetectorRef.markForCheck();
     return this.locationService.getLat();
   }
 
-  public getLong() {
+  public get long() {
     return this.locationService.getLong();
   }
 }

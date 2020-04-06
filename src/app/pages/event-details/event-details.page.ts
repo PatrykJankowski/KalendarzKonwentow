@@ -63,4 +63,12 @@ export class EventDetailsPage implements OnInit{
   public isFavourite(id: number) {
     return this.favouritesService.isFavourite(id);
   }
+
+  public get lat() {
+    return parseFloat(this.eventDetails.lat);
+  }
+
+  public get long() {
+    return parseFloat(this.eventDetails.long);
+  }
 }
