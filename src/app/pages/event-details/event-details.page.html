@@ -74,6 +74,15 @@
         <h4 class="event-details__caption">Opis:</h4>
         <div [outerHTML]="eventDetails.description"></div>
       </ng-container>
+
+<!--      <agm-map class="map" style="width: 100%; height: 200px" [latitude]=eventDetails.lat [longitude]=eventDetails.long [zoom]=11 [disableDefaultUI]="false">
+        <agm-marker
+                    [zIndex]="10"
+                    [latitude]=eventDetails.lat
+                    [longitude]=eventDetails.long>
+        </agm-marker>
+      </agm-map>
+-->
     </ion-card-content>
 
     <ion-card-content *ngIf="!eventDetails">

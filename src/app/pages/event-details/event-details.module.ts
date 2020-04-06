@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
+import { AgmCoreModule } from '@agm/core';
+
 import { EventDetailsPageRoutingModule } from './event-details-routing.module';
 import { EventDetailsPage } from './event-details.page';
 
@@ -12,7 +14,8 @@ import { EventDetailsPage } from './event-details.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    EventDetailsPageRoutingModule
+    EventDetailsPageRoutingModule,
+    AgmCoreModule
   ],
   declarations: [EventDetailsPage]
 })

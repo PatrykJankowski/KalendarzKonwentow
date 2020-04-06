@@ -20,7 +20,7 @@ const { Storage } = Plugins;
 })
 export class EventDetailsPage implements OnInit{
   public eventDetails: EventDetails = this.activatedRoute.snapshot.data.eventDetails[0];
-  public image: string = this.eventDetails.image;
+  public image: string;
 
   constructor(private activatedRoute: ActivatedRoute,
               private changeDetectorRef: ChangeDetectorRef,
@@ -30,6 +30,8 @@ export class EventDetailsPage implements OnInit{
               ) {}
 
   public ngOnInit(): void {
+    if(this.eventDetails) this.image = this.eventDetails.image;
+
     Storage.get({key: 'img-' + this.activatedRoute.snapshot.params.id}).then((image) => {
       if (image.value) {
         this.image = JSON.parse(image.value).data;
