@@ -60,7 +60,7 @@ export class ArchivalEventsPage implements OnInit {
 
   private async loadData(clearStorage: boolean, isEventsListEmpty: boolean) {
     if(isEventsListEmpty) {
-      this.dataService.getEvents(this._year, true).subscribe((events: Array<Event>) => {
+      this.dataService.getEvents(this._year).subscribe((events: Array<Event>) => {
         this.events = events.reverse();
         this.changeDetectorRef.markForCheck();
       });

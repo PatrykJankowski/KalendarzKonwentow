@@ -37,9 +37,6 @@ export class FavouritesPage implements OnInit, OnChanges {
 
     this.favouritesService.favouritesChange.subscribe(events => {
       this.changeDetectorRef.markForCheck();
-    });
-
-    this.favouritesService.favouritesChange.subscribe(events => {
       this.filteredEvents = events;
     });
   }

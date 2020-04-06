@@ -141,10 +141,10 @@ export class FiltersComponent implements OnInit, OnChanges {
       this.filterEvents(this.originalEvents);
     });
 
-    this.favouritesService.favouritesChange.subscribe(value => {
-      this.originalEvents = value;
+    /*this.favouritesService.favouritesChange.subscribe(value => {
+      //this.originalEvents = value;
       this.initFilters();
-    });
+    });*/
 
     /*this.searchField = new FormControl();
     this.searchField.valueChanges.subscribe((searchingTerm: string) => {
@@ -207,6 +207,7 @@ export class FiltersComponent implements OnInit, OnChanges {
     if (!this._date && !this.enableDate) {
       futureEvents = true;
     }
+console.log(this.fav, events)
 
     const filteredEvents = events.filter((event: Event) => (
       this.filterByCategory(event) &&
@@ -220,7 +221,7 @@ export class FiltersComponent implements OnInit, OnChanges {
         this.fav
       ))
     );
-
+    console.log('a;,', filteredEvents)
     this.eventsFiltered.emit(filteredEvents);
   }
 

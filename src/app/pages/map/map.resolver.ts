@@ -10,6 +10,6 @@ export class MapResolver implements Resolve<any> {
   constructor(private dataService: DataService) {}
 
   public resolve(): any {
-    return this.dataService.getEvents('', false);
+    return this.dataService.getEvents('');
   }
 }
