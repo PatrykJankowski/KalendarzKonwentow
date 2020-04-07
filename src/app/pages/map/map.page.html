@@ -3,13 +3,11 @@
     <img src="assets/logo.png" alt="Konwenty Południowe" class="header__logo">
     <img *ngIf="!networkStatus" src="/assets/offline.png" class="header__offline">
   </ion-title>
-  <!--<app-filters [events]="_events" (eventsFiltered)="filteredEvents = $event" [enableVoivodeship]="true" [enableInRange]="true"></app-filters>-->
 </ion-header>
 
 <ion-content>
-  <agm-map class="map" [latitude]=lat [longitude]=long [zoom]=zoom [disableDefaultUI]="false">
+  <agm-map class="map" [latitude]=lat [longitude]=long [zoom]=_zoom [disableDefaultUI]="false">
     <agm-marker *ngFor="let event of events"
-                [zIndex]="10"
                 [openInfoWindow]=true
                 [markerClickable]=true
                 [latitude]=event.lat

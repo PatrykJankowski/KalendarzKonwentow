@@ -11,12 +11,14 @@ import { NetworkService } from '@services/network.service';
   styleUrls: ['./map.page.scss'],
 })
 export class MapPage implements OnInit {
-  public events: Array<Event> = [];
+  public events: Array<Event>;
   public networkStatus: boolean;
+  public _zoom: number = 6;
 
-  public zoom: number = 6;
-
-  constructor(private activatedRoute: ActivatedRoute, private networkService: NetworkService, private changeDetectorRef: ChangeDetectorRef, private locationService: LocationService) { }
+  constructor(private activatedRoute: ActivatedRoute,
+              private changeDetectorRef: ChangeDetectorRef,
+              private networkService: NetworkService,
+              private locationService: LocationService) {}
 
   ngOnInit() {
     this.events = this.activatedRoute.snapshot.data.events;
@@ -27,9 +29,12 @@ export class MapPage implements OnInit {
     });
   }
 
+  private set zoom(zoom) {
+    this._zoom = zoom;
+  }
+
   public get lat() {
     if (this.locationService.getLat() !== 52) this.zoom = 11;
-    this.changeDetectorRef.markForCheck();
     return this.locationService.getLat();
   }
 

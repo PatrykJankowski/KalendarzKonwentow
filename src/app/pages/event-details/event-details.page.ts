@@ -53,11 +53,13 @@ export class EventDetailsPage implements OnInit{
   }*/
 
   public addToFavourites(event: Event): void {
-    this.favouritesService.addToFavorites(event).then(() => this.changeDetectorRef.markForCheck());
+    this.favouritesService.addToFavorites(event)
+      .then(() => this.changeDetectorRef.markForCheck());
   }
 
   public removeFromFavourites(event: Event): void {
-    this.favouritesService.removeFromFavourites(event).then(() => this.changeDetectorRef.markForCheck());
+    this.favouritesService.removeFromFavourites(event)
+      .then(() => this.changeDetectorRef.markForCheck());
   }
 
   public isFavourite(id: number) {
