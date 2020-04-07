@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
-import { LoadingController, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 
 import { Event } from '@models/event.model';
 import { DataService } from '@services/data.service';
@@ -61,8 +61,6 @@ export class FiltersComponent implements OnInit, OnChanges {
   public _noColumns: number;
 
   public currentYear: number = new Date().getFullYear();
-
-  private isLoading = false;
 
   public categoryFilter: FormControl;
   public voivodeshipFilter: FormControl;
@@ -141,11 +139,6 @@ export class FiltersComponent implements OnInit, OnChanges {
       this.filterEvents(this.originalEvents);
     });
 
-    /*this.favouritesService.favouritesChange.subscribe(value => {
-      //this.originalEvents = value;
-      this.initFilters();
-    });*/
-
     /*this.searchField = new FormControl();
     this.searchField.valueChanges.subscribe((searchingTerm: string) => {
       this.searchingTerm = searchingTerm;
@@ -207,7 +200,6 @@ export class FiltersComponent implements OnInit, OnChanges {
     if (!this._date && !this.enableDate) {
       futureEvents = true;
     }
-console.log(this.fav, events)
 
     const filteredEvents = events.filter((event: Event) => (
       this.filterByCategory(event) &&
@@ -221,7 +213,7 @@ console.log(this.fav, events)
         this.fav
       ))
     );
-    console.log('a;,', filteredEvents)
+
     this.eventsFiltered.emit(filteredEvents);
   }
 

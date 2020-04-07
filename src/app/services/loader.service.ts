@@ -13,7 +13,7 @@ export class LoadingService {
   public async present() {
     this.isLoading = true;
     return await this.loadingController.create({
-      message: 'Wyszukiwanie wydarzeń w pobliżu...',
+      message: 'Wyszukiwanie wydarzeń...',
     }).then(a => {
       a.present().then(() => {
         if (!this.isLoading) {
