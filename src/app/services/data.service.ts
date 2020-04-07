@@ -25,68 +25,43 @@ export class DataService {
         if(eventsArray[0].length === eventsArray[1].length) {
           return of(eventsArray[1])
         } else {
-          return apiRequest.pipe(tap((events: Array<Event>) => {
-            this.setImages(events).then((eventsWithImages) => {
-              this.storageService.setLocalData(`events${year}`, eventsWithImages);
+          return apiRequest.pipe(
+            tap((events: Array<Event>) => {
+              this.storageService.setLocalData(`events${year}`, events);
+              this.storageService.setImages(events);
             })
-          }))
+          )
         }
       }),
       catchError(() => {
-        return this.storageService.getLocalData(`events${year}`).catch(() => []);
+        return this.storageService.getLocalData(`events${year}`);
       })
     );
   }
 
   public getEventDetails(id: number): Observable<EventDetails[]> {
-    const storageRequest = this.http.get(`${this.API_URL}?id=${id}`);
+    const apiRequest = this.http.get(`${this.API_URL}?id=${id}`);
 
     return from(this.storageService.getLocalData(`event-details-${id}`)).pipe(
-      map((val) => {
-        if (val) return val;
+      map((eventDetailsFromStorage) => {
+        if (eventDetailsFromStorage) return eventDetailsFromStorage;
         return [];
       }),
-      flatMap((val) => {
-        if (val.length) {
-          return of(val);
+      flatMap((eventDetailsFromStorage) => {
+        if (eventDetailsFromStorage.length) {
+          return of(eventDetailsFromStorage);
         } else {
-          return storageRequest.pipe(tap((eventDetails: Array<Event>) => {
-            this.setImages(eventDetails).then((eventWithImage) => {
-              return this.storageService.setLocalData(`event-details-${id}`, eventWithImage);
+          return apiRequest.pipe(
+            tap((eventDetails: Event) => {
+              this.storageService.setLocalData(`event-details-${id}`, eventDetails);
+              this.storageService.setImages(eventDetails);
             })
-          }));
+          );
         }
       }),
       catchError(() => {
-        return this.storageService.getLocalData(`event-details-${id}`).catch(() => []);
+        return this.storageService.getLocalData(`event-details-${id}`);
       })
     );
-  }
-
-  private async convertImageToBase64(url): Promise<any> {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const result = new Promise((resolve, reject) => {
-      if (blob.type === 'text/html') {
-        // this.event.image = transparentImage;
-        resolve('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
-      } else {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = () => reject;
-        reader.readAsDataURL(blob);
-      }
-    });
-
-    return await result;
-  }
-
-  private async setImages(events) {
-    for (const event of events) {
-      await this.convertImageToBase64(event.image).then((img) => {
-        this.storageService.setLocalData(`img-${event.id}`, img)
-      })
-    }
-    return events;
   }
 }
