@@ -241,16 +241,16 @@ export class FiltersComponent implements OnInit, OnChanges {
   }
 
   private filterByLocation(event): boolean {
-    return event.location.indexOf(this._location) > -1;
+    return !this._location || event.location === this._location;
   }
 
   private filterByVoivodeship(event): boolean {
     if(!this.enableVoivodeship) return true;
-    return event.voivodeship.indexOf(this._voivodeship) > -1;
+    return !this._voivodeship || event.voivodeship === this._voivodeship;
   }
 
   private filterByCategory(event): boolean {
-    return event.event_type.indexOf(this._category) > -1;
+    return !this._category || event.event_type === this._category;
   }
 
   /*private filterBySearchingTerm(event): boolean {
